@@ -14,6 +14,7 @@ import { User } from '../entity/user.entity';
 @Injectable()
 export class UserRepository extends Repository<User> {
   private logger: Logger = new Logger(UserRepository.name);
+
   constructor(private dataSource: DataSource) {
     super(User, dataSource.createEntityManager());
   }
@@ -26,6 +27,7 @@ export class UserRepository extends Repository<User> {
         userName,
         email,
         hashedCredential: credential,
+        createdDt: new Date(),
       }).save();
 
       this.logger.log(`User successfully created: ${email}`);
@@ -36,7 +38,7 @@ export class UserRepository extends Repository<User> {
         this.logger.log(`Duplicate user email: ${email}`);
         throw new ConflictException('Duplicate email address');
       } else {
-        this.logger.log('DB error occurred');
+        this.logger.log(`DB error occurred(User saving process): ${email}`);
         throw new InternalServerErrorException('DB error occurred');
       }
     }
@@ -48,7 +50,7 @@ export class UserRepository extends Repository<User> {
     try {
       user = await this.findOneBy({ email });
     } catch (err) {
-      this.logger.log('DB error occurred');
+      this.logger.log(`DB error occurred(User finding process): ${email}`);
       throw new InternalServerErrorException('DB error occurred');
     }
 

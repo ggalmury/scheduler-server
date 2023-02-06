@@ -13,4 +13,7 @@ export class User extends BaseEntity {
 
   @Column({ type: 'varchar', nullable: false })
   hashedCredential: string;
+
+  @Column({ type: 'date' })
+  createdDt: Date;
 }

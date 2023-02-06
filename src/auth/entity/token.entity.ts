@@ -1,11 +1,9 @@
-import { BaseEntity, Column, Entity, JoinColumn, OneToOne } from 'typeorm';
-import { User } from './user.entity';
+import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity()
 export class UserToken extends BaseEntity {
-  @OneToOne((type) => User)
-  @JoinColumn({ name: 'email', referencedColumnName: 'email' })
-  user: User;
+  @PrimaryColumn({ type: 'varchar' })
+  email: string;
 
   @Column({ type: 'varchar' })
   refreshToken: string;

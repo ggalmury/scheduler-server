@@ -10,7 +10,7 @@ export class JwtUtil {
     const accessToken = this.jwtService.sign(payload, {
       secret: process.env.JWT_ACCESS_SECRET,
       expiresIn: process.env.JWT_ACCESS_EXPIRE,
-      issuer: process.env.ISSUER,
+      issuer: process.env.JWT_ISSUER,
     });
 
     return accessToken;
@@ -20,7 +20,7 @@ export class JwtUtil {
     const refreshToken = this.jwtService.sign(payload, {
       secret: process.env.JWT_REFRESH_SECRET,
       expiresIn: process.env.JWT_REFRESH_EXPIRE,
-      issuer: process.env.ISSUER,
+      issuer: process.env.JWT_ISSUER,
     });
 
     return refreshToken;

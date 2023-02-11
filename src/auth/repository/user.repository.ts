@@ -1,15 +1,8 @@
-import {
-  ConflictException,
-  HttpException,
-  HttpStatus,
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
+import { ConflictException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { SignUpDto } from '../dto/signup.dto';
 import { User } from '../entity/user.entity';
+import { AccessPayload } from '../interface/jwt.payload';
 
 @Injectable()
 export class UserRepository extends Repository<User> {
@@ -35,8 +28,7 @@ export class UserRepository extends Repository<User> {
       return result;
     } catch (err) {
       if (err.code === 'ER_DUP_ENTRY') {
-        this.logger.log(`Duplicate user email: ${email}`);
-        throw new ConflictException('Duplicate email address');
+        return null;
       } else {
         this.logger.log(`DB error occurred(User saving process): ${email}`);
         throw new InternalServerErrorException('DB error occurred');
@@ -45,20 +37,26 @@ export class UserRepository extends Repository<User> {
   }
 
   async findUser(email: string): Promise<User> {
-    let user: User;
-
     try {
-      user = await this.findOneBy({ email });
+      const user: User = await this.findOneBy({ email });
+
+      return user;
     } catch (err) {
       this.logger.log(`DB error occurred(User finding process): ${email}`);
       throw new InternalServerErrorException('DB error occurred');
     }
+  }
 
-    if (!user) {
-      this.logger.log(`User not found: ${email}`);
-      throw new NotFoundException('User not found');
+  async validateAccessPayload(accessPayload: AccessPayload): Promise<User> {
+    const { userName, email } = accessPayload;
+
+    try {
+      const user: User = await this.findOneBy({ userName, email });
+
+      return user;
+    } catch (err) {
+      this.logger.log(`DB error occurred(Finding user in access payload): ${email}`);
+      throw new InternalServerErrorException('DB error occurred');
     }
-
-    return user;
   }
 }

@@ -1,6 +1,13 @@
-import { BadRequestException, Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { SignUpDto } from './dto/signup.dto';
-import { UserRepository } from './repository/auth.repository';
+import { UserRepository } from './repository/user.repository';
 import * as bcrypt from 'bcryptjs';
 import { User } from './entity/user.entity';
 import { SignInDto } from './dto/signin.dto';
@@ -29,6 +36,11 @@ export class AuthService {
 
     const saveUser: User = await this.userRepository.saveUser(newSignUpDto);
 
+    if (!saveUser) {
+      this.logger.log(`Duplicate user email: ${email}`);
+      throw new ConflictException('Duplicate email address');
+    }
+
     const registeredUser: RegisteredUserDto = new RegisteredUserDto(
       saveUser.uid,
       saveUser.userName,
@@ -42,7 +54,12 @@ export class AuthService {
   async login(signInDto: SignInDto): Promise<LoggedInUserDto> {
     const { email, credential } = signInDto;
 
-    const registeredUser: User = await this.userRepository.findUser(email);
+    const registeredUser: User | null = await this.userRepository.findUser(email);
+
+    if (!registeredUser) {
+      this.logger.log(`User not found: ${email}`);
+      throw new NotFoundException('User not found');
+    }
 
     const decodedCredential: boolean = await bcrypt.compare(credential, registeredUser.hashedCredential);
 

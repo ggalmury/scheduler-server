@@ -21,11 +21,11 @@ export class JwtAccessStrategy extends PassportStrategy(Strategy, StrategyName.J
     const validatedUser: User = await this.userRepository.validateAccessPayload(accessPayload);
 
     if (!validatedUser) {
-      this.logger.log(`Invalid access token: ${accessPayload.email}`);
-      throw new UnauthorizedException('Invalid access token');
+      this.logger.log(`Invalid access token payload: ${accessPayload.email}`);
+      throw new UnauthorizedException('Invalid access token payload');
     }
 
-    this.logger.log(`Valid access token: ${accessPayload.email}`);
+    this.logger.log(`Valid access token payload: ${accessPayload.email}`);
     return validatedUser;
   }
 }

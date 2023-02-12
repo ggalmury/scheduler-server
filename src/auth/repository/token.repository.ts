@@ -20,4 +20,10 @@ export class TokenRepository extends Repository<UserToken> {
       throw new InternalServerErrorException('DB error occured');
     }
   }
+
+  async findRefreshToken(email: string, refreshToken: string): Promise<UserToken> {
+    const getRefreshToken: UserToken = await this.findOneBy({ email, refreshToken });
+
+    return getRefreshToken;
+  }
 }

@@ -2,7 +2,7 @@ import { ConflictException, Injectable, InternalServerErrorException, Logger, No
 import { DataSource, Repository } from 'typeorm';
 import { SignUpDto } from '../dto/signup.dto';
 import { User } from '../entity/user.entity';
-import { AccessPayload } from '../interface/jwt.payload';
+import { AccessPayload, RefreshPayload } from '../interface/jwt.payload';
 
 @Injectable()
 export class UserRepository extends Repository<User> {
@@ -56,6 +56,19 @@ export class UserRepository extends Repository<User> {
       return user;
     } catch (err) {
       this.logger.log(`DB error occurred(Finding user in access payload): ${email}`);
+      throw new InternalServerErrorException('DB error occurred');
+    }
+  }
+
+  async validateRefreshPayload(refreshPayload: RefreshPayload): Promise<User> {
+    const { email } = refreshPayload;
+
+    try {
+      const user: User = await this.findOneBy({ email });
+
+      return user;
+    } catch (err) {
+      this.logger.log(`DB error occurred(Finding user in refresh payload): ${email}`);
       throw new InternalServerErrorException('DB error occurred');
     }
   }

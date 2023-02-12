@@ -16,6 +16,10 @@ import { AccessPayload, RefreshPayload } from './interface/jwt.payload';
 import { TokenRepository } from './repository/token.repository';
 import { RegisteredUserDto } from './dto/registered-user.dto';
 import { LoggedInUserDto } from './dto/loggedIn-user.dto';
+import { RegenerateTokenDto } from './dto/regenerate-token.dto';
+import { JwtService } from '@nestjs/jwt';
+import { DecodedAccessTokenPayload } from './interface/decoded-token-payload';
+import { UserToken } from './entity/token.entity';
 
 @Injectable()
 export class AuthService {
@@ -23,6 +27,7 @@ export class AuthService {
   constructor(
     private userRepository: UserRepository,
     private tokenRepository: TokenRepository,
+    private jwtService: JwtService,
     private jwtUtil: JwtUtil,
   ) {}
 
@@ -96,6 +101,38 @@ export class AuthService {
     } else {
       this.logger.log('Error occurred');
       throw new InternalServerErrorException();
+    }
+  }
+
+  async regenerateToken(regenerateTokenDto: RegenerateTokenDto): Promise<RegenerateTokenDto> {
+    const { email, accessToken, refreshToken } = regenerateTokenDto;
+
+    const decodedAccessToken = this.jwtService.decode(accessToken) as { [key: string]: any };
+
+    if (email === decodedAccessToken.email) {
+      const storedRefreshToken: UserToken = await this.tokenRepository.findRefreshToken(email, refreshToken);
+
+      if (!storedRefreshToken) {
+        this.logger.log(`Invalid refresh token: ${email}`);
+        throw new BadRequestException('Invalid refresh token');
+      }
+
+      const accessPayload: AccessPayload = { userName: decodedAccessToken.userName, email };
+      const refreshPayload: RefreshPayload = { email };
+
+      const newAccessToken: string = this.jwtUtil.generateAccessToken(accessPayload);
+      const newRefreshToken: string = this.jwtUtil.generateRefreshToken(refreshPayload);
+
+      await this.tokenRepository.saveRefreshToken(decodedAccessToken.email, newRefreshToken);
+
+      const newGeneratedToken: RegenerateTokenDto = new RegenerateTokenDto(email, newAccessToken, newRefreshToken);
+
+      this.logger.log(`Tokens are successfully regenerated: ${email}`);
+
+      return newGeneratedToken;
+    } else {
+      this.logger.log(`Invalid access token: ${email}`);
+      throw new BadRequestException('Invalid access token');
     }
   }
 }

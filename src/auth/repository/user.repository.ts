@@ -1,8 +1,8 @@
-import { ConflictException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
+import { AccessPayload, RefreshPayload } from 'src/interface/auth-interface';
 import { DataSource, Repository } from 'typeorm';
 import { SignUpDto } from '../dto/signup.dto';
 import { User } from '../entity/user.entity';
-import { AccessPayload, RefreshPayload } from '../interface/jwt.payload';
 
 @Injectable()
 export class UserRepository extends Repository<User> {

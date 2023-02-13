@@ -2,7 +2,7 @@ import { IsNotEmpty } from 'class-validator';
 
 export class RegenerateTokenDto {
   @IsNotEmpty()
-  email?: string;
+  email: string;
 
   @IsNotEmpty()
   accessToken: string;

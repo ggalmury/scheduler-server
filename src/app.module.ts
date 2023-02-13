@@ -7,12 +7,7 @@ import { typeOrmConfig } from './config/typeorm.config';
 import { TaskModule } from './task/task.module';
 
 @Module({
-  imports: [
-    ConfigurationModule,
-    TypeOrmModule.forRoot(typeOrmConfig),
-    AuthModule,
-    TaskModule,
-  ],
+  imports: [ConfigurationModule, TypeOrmModule.forRoot(typeOrmConfig), AuthModule, TaskModule],
   controllers: [],
   providers: [],
 })

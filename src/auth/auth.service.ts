@@ -12,13 +12,12 @@ import * as bcrypt from 'bcryptjs';
 import { User } from './entity/user.entity';
 import { SignInDto } from './dto/signin.dto';
 import { JwtUtil } from './util/jwt.util';
-import { AccessPayload, RefreshPayload } from './interface/jwt.payload';
+import { AccessPayload, RefreshPayload } from '../interface/auth-interface';
 import { TokenRepository } from './repository/token.repository';
 import { RegisteredUserDto } from './dto/registered-user.dto';
 import { LoggedInUserDto } from './dto/loggedIn-user.dto';
 import { RegenerateTokenDto } from './dto/regenerate-token.dto';
 import { JwtService } from '@nestjs/jwt';
-import { DecodedAccessTokenPayload } from './interface/decoded-token-payload';
 import { UserToken } from './entity/token.entity';
 
 @Injectable()
@@ -123,7 +122,7 @@ export class AuthService {
       const newAccessToken: string = this.jwtUtil.generateAccessToken(accessPayload);
       const newRefreshToken: string = this.jwtUtil.generateRefreshToken(refreshPayload);
 
-      await this.tokenRepository.saveRefreshToken(decodedAccessToken.email, newRefreshToken);
+      await this.tokenRepository.saveRefreshToken(email, newRefreshToken);
 
       const newGeneratedToken: RegenerateTokenDto = new RegenerateTokenDto(email, newAccessToken, newRefreshToken);
 
@@ -131,8 +130,8 @@ export class AuthService {
 
       return newGeneratedToken;
     } else {
-      this.logger.log(`Invalid access token: ${email}`);
-      throw new BadRequestException('Invalid access token');
+      this.logger.log(`Invalid access token payload: ${email}`);
+      throw new BadRequestException('Invalid access token payload');
     }
   }
 }

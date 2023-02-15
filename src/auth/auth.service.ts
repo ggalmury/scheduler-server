@@ -106,7 +106,7 @@ export class AuthService {
   async regenerateToken(regenerateTokenDto: RegenerateTokenDto): Promise<RegenerateTokenDto> {
     const { email, accessToken, refreshToken } = regenerateTokenDto;
 
-    const decodedAccessToken = this.jwtService.decode(accessToken) as { [key: string]: any };
+    const decodedAccessToken = this.jwtUtil.decodeToken(accessToken);
 
     if (email === decodedAccessToken.email) {
       const storedRefreshToken: UserToken = await this.tokenRepository.findRefreshToken(email, refreshToken);

@@ -26,5 +26,11 @@ export class JwtUtil {
     return refreshToken;
   }
 
+  decodeToken(token: string): any {
+    const decodedToken = this.jwtService.decode(token) as { [key: string]: any };
+
+    return decodedToken;
+  }
+
   // regenerateEachTokens()
 }

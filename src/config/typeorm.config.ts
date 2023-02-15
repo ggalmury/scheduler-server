@@ -1,7 +1,7 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { UserToken } from 'src/auth/entity/token.entity';
 import { User } from 'src/auth/entity/user.entity';
-import { CreatedTaskEntity } from 'src/task/entity/created-task.entity';
+import { CreatedTask } from 'src/task/entity/created-task.entity';
 import SnakeNamingStrategy from 'typeorm-naming-strategy';
 
 export const typeOrmConfig: TypeOrmModuleOptions = {
@@ -12,5 +12,5 @@ export const typeOrmConfig: TypeOrmModuleOptions = {
   database: process.env.DB_DATABASE,
   synchronize: true,
   namingStrategy: new SnakeNamingStrategy(),
-  entities: [User, UserToken, CreatedTaskEntity],
+  entities: [User, UserToken, CreatedTask],
 };

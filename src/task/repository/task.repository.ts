@@ -1,6 +1,7 @@
 import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import { CreatedTaskDto } from '../dto/task.dto';
+import { CreatedTaskDto } from '../dto/create-task.dto';
+import { SearchTaskDto } from '../dto/search-task.dto';
 import { CreatedTask } from '../entity/created-task.entity';
 
 @Injectable()
@@ -11,7 +12,6 @@ export class TaskRepository extends Repository<CreatedTask> {
   }
 
   async createTask(createdTaskDto: CreatedTaskDto): Promise<CreatedTask> {
-    console.log(createdTaskDto);
     const { uid, userName, email, title, description, color, location, date, time, privacy } = createdTaskDto;
 
     try {
@@ -29,9 +29,24 @@ export class TaskRepository extends Repository<CreatedTask> {
         createdDt: new Date(),
       }).save();
 
+      this.logger.log(`Task successfully created: ${email}`);
+
       return result;
     } catch (err) {
       this.logger.log(`DB error occurred(Task saving process): ${email}`);
+      throw new InternalServerErrorException('DB error occurred');
+    }
+  }
+
+  async getTask(searchTaskDto: SearchTaskDto): Promise<CreatedTask[]> {
+    const { uid, email } = searchTaskDto;
+    try {
+      const result: CreatedTask[] = await this.findBy({ uid, email });
+
+      return result;
+    } catch (err) {
+      console.log(err);
+      this.logger.log(`DB error occurred(Task searching process): ${email}`);
       throw new InternalServerErrorException('DB error occurred');
     }
   }

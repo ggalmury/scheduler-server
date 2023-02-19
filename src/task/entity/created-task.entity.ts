@@ -1,5 +1,5 @@
-import { TaskPrivacy } from 'src/enum/task-enum';
-import { TaskTimePeriod } from 'src/interface/task-interface';
+import { TaskColor, TaskPrivacy, TaskType } from 'src/enum/task-enum';
+import { TaskTime } from 'src/interface/task-interface';
 import { BaseEntity, Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
@@ -22,8 +22,8 @@ export class CreatedTask extends BaseEntity {
   @Column({ type: 'varchar', default: 'no description' })
   description: string;
 
-  @Column({ type: 'varchar', default: '#88d3ce' })
-  color: string;
+  @Column({ type: 'varchar' })
+  color: TaskColor;
 
   @Column({ type: 'varchar' })
   location: string;
@@ -32,10 +32,13 @@ export class CreatedTask extends BaseEntity {
   date: Date;
 
   @Column({ type: 'json' })
-  time: TaskTimePeriod;
+  time: TaskTime;
 
-  @Column({ type: 'varchar', default: TaskPrivacy.PUBLIC })
+  @Column({ type: 'varchar' })
   privacy: TaskPrivacy;
+
+  @Column({ type: 'varchar' })
+  type: TaskType;
 
   @Column({ type: 'date' })
   createdDt: Date;

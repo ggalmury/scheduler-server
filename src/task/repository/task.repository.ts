@@ -12,7 +12,7 @@ export class TaskRepository extends Repository<CreatedTask> {
   }
 
   async createTask(createdTaskDto: CreatedTaskDto): Promise<CreatedTask> {
-    const { uid, userName, email, title, description, color, location, date, time, privacy } = createdTaskDto;
+    const { uid, userName, email, title, description, color, location, date, time, privacy, type } = createdTaskDto;
 
     try {
       const result = await this.create({
@@ -26,6 +26,7 @@ export class TaskRepository extends Repository<CreatedTask> {
         date: new Date(date),
         time,
         privacy,
+        type,
         createdDt: new Date(),
       }).save();
 

@@ -1,4 +1,9 @@
-export interface TaskTimePeriod {
-  startAt: { hour: number; minute: number };
-  endAt: { hour: number; minute: number };
+export interface TaskTimeDetail {
+  hour: number;
+  minute: number;
+}
+
+export interface TaskTime {
+  startAt: TaskTimeDetail;
+  endAt: TaskTimeDetail;
 }

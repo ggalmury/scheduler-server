@@ -1,5 +1,5 @@
-import { TaskPrivacy } from 'src/enum/task-enum';
-import { TaskTimePeriod } from 'src/interface/task-interface';
+import { TaskColor, TaskPrivacy, TaskType } from 'src/enum/task-enum';
+import { TaskTime } from 'src/interface/task-interface';
 
 export class CreatedTaskDto {
   uid: number;
@@ -7,9 +7,10 @@ export class CreatedTaskDto {
   email: string;
   title: string;
   description: string;
-  color: string;
+  color: TaskColor;
   location: string;
   date: Date;
-  time: TaskTimePeriod;
+  time: TaskTime;
   privacy: TaskPrivacy;
+  type: TaskType;
 }

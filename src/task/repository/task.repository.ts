@@ -1,6 +1,7 @@
 import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, DeleteResult, Repository } from 'typeorm';
 import { CreatedTaskDto } from '../dto/create-task.dto';
+import { DeleteTaskDto } from '../dto/delete-task.dto';
 import { SearchTaskDto } from '../dto/search-task.dto';
 import { CreatedTask } from '../entity/created-task.entity';
 
@@ -46,8 +47,23 @@ export class TaskRepository extends Repository<CreatedTask> {
 
       return result;
     } catch (err) {
-      console.log(err);
       this.logger.log(`DB error occurred(Task searching process): ${email}`);
+      throw new InternalServerErrorException('DB error occurred');
+    }
+  }
+
+  async dropTask(deleteTaskDto: DeleteTaskDto): Promise<CreatedTask> {
+    const { email, taskId } = deleteTaskDto;
+    try {
+      const entity: CreatedTask = await this.findOneBy({ email, taskId });
+
+      if (entity) {
+        await this.remove(entity);
+      }
+
+      return entity;
+    } catch (err) {
+      this.logger.log(`DB error occurred(Task deleting process): ${email}`);
       throw new InternalServerErrorException('DB error occurred');
     }
   }

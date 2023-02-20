@@ -1,6 +1,6 @@
 import { TaskColor, TaskPrivacy, TaskType } from 'src/enum/task-enum';
 import { TaskTime } from 'src/interface/task-interface';
-import { BaseEntity, Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class CreatedTask extends BaseEntity {

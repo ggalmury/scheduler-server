@@ -19,7 +19,6 @@ export class TaskController {
   @Post('/list')
   @UseGuards(JwtAccessTokenGuard)
   async list(@Body() SearchTaskDto: SearchTaskDto): Promise<CreatedTask[]> {
-    console.log(SearchTaskDto);
     return await this.taskService.searchTask(SearchTaskDto);
   }
 

@@ -1,6 +1,7 @@
 import { TaskColor, TaskPrivacy, TaskType } from 'src/enum/task-enum';
 import { TaskTime } from 'src/interface/task-interface';
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { CreatedTodo } from '../../todo/entity/created-todo.entity';
 
 @Entity()
 export class CreatedTask extends BaseEntity {
@@ -42,4 +43,7 @@ export class CreatedTask extends BaseEntity {
 
   @Column({ type: 'date' })
   createdDt: Date;
+
+  @OneToMany(() => CreatedTodo, (todo) => todo.createdTask, { eager: true })
+  createdTodo: CreatedTodo[];
 }

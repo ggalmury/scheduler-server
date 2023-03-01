@@ -48,10 +48,10 @@ export class UserRepository extends Repository<User> {
   }
 
   async validateAccessPayload(accessPayload: AccessPayload): Promise<User> {
-    const { userName, email } = accessPayload;
+    const { uid, userName, email } = accessPayload;
 
     try {
-      const user: User = await this.findOneBy({ userName, email });
+      const user: User = await this.findOneBy({ uid, userName, email });
 
       return user;
     } catch (err) {
@@ -61,10 +61,10 @@ export class UserRepository extends Repository<User> {
   }
 
   async validateRefreshPayload(refreshPayload: RefreshPayload): Promise<User> {
-    const { email } = refreshPayload;
+    const { uid, email } = refreshPayload;
 
     try {
-      const user: User = await this.findOneBy({ email });
+      const user: User = await this.findOneBy({ uid, email });
 
       return user;
     } catch (err) {

@@ -13,6 +13,6 @@ export class CreatedTodo extends BaseEntity {
   description: string;
 
   @ManyToOne(() => CreatedTask, (task) => task.createdTodo, { onDelete: 'SET NULL' })
-  @JoinColumn({ name: 'taskId' })
+  @JoinColumn({ name: 'taskId', referencedColumnName: 'taskId' })
   createdTask: CreatedTask;
 }

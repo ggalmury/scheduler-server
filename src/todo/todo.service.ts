@@ -1,7 +1,9 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { User } from 'src/auth/entity/user.entity';
 import { CreatedTask } from 'src/task/entity/created-task.entity';
 import { TaskRepository } from 'src/task/repository/task.repository';
 import { CreatedTodoDto } from './dto/create-todo.dto';
+import { DeleteTodoDto } from './dto/delete-todo.dto';
 import { CreatedTodo } from './entity/created-todo.entity';
 import { TodoRepository } from './repository/todo.repository';
 
@@ -11,14 +13,19 @@ export class TodoService {
 
   constructor(private todoRepository: TodoRepository, private taskRepository: TaskRepository) {}
 
-  async createTodo(createdTodoDto: CreatedTodoDto): Promise<CreatedTodo> {
-    const task: CreatedTask = await this.taskRepository.validationTask(createdTodoDto);
+  async createTodo(user: User, createdTodoDto: CreatedTodoDto): Promise<CreatedTodo> {
+    const { email } = user;
+    const task: CreatedTask = await this.taskRepository.findTaskById(user, createdTodoDto);
 
     if (!task) {
-      this.logger.log(`Task not found: ${createdTodoDto.email}`);
+      this.logger.log(`Task not found: ${email}`);
       throw new NotFoundException('Task not found');
     }
 
-    return await this.todoRepository.createTodo(createdTodoDto);
+    return await this.todoRepository.createTodo(user, createdTodoDto);
+  }
+
+  async deleteTodo(user: User, deleteTodoDto: DeleteTodoDto): Promise<CreatedTodo> {
+    return await this.todoRepository.deleteTodo(user, deleteTodoDto);
   }
 }

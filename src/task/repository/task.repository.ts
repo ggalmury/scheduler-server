@@ -1,9 +1,9 @@
 import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
+import { User } from 'src/auth/entity/user.entity';
 import { CreatedTodoDto } from 'src/todo/dto/create-todo.dto';
 import { DataSource, Repository } from 'typeorm';
 import { CreatedTaskDto } from '../dto/create-task.dto';
 import { DeleteTaskDto } from '../dto/delete-task.dto';
-import { SearchTaskDto } from '../dto/search-task.dto';
 import { CreatedTask } from '../entity/created-task.entity';
 
 @Injectable()
@@ -14,8 +14,9 @@ export class TaskRepository extends Repository<CreatedTask> {
     super(CreatedTask, dataSource.createEntityManager());
   }
 
-  async createTask(createdTaskDto: CreatedTaskDto): Promise<CreatedTask> {
-    const { uid, userName, email, title, description, color, location, date, time, privacy, type } = createdTaskDto;
+  async createTask(user: User, createdTaskDto: CreatedTaskDto): Promise<CreatedTask> {
+    const { uid, userName, email } = user;
+    const { title, description, color, location, date, time, privacy, type } = createdTaskDto;
 
     try {
       const result: CreatedTask = await this.create({
@@ -42,10 +43,11 @@ export class TaskRepository extends Repository<CreatedTask> {
     }
   }
 
-  async getTask(searchTaskDto: SearchTaskDto): Promise<CreatedTask[]> {
-    const { uid, email } = searchTaskDto;
+  async searchTask(user: User): Promise<CreatedTask[]> {
+    const { uid, email } = user;
+
     try {
-      const result: CreatedTask[] = await this.findBy({ uid, email });
+      const result: CreatedTask[] = await this.findBy({ uid });
 
       return result;
     } catch (err) {
@@ -54,10 +56,12 @@ export class TaskRepository extends Repository<CreatedTask> {
     }
   }
 
-  async dropTask(deleteTaskDto: DeleteTaskDto): Promise<CreatedTask> {
-    const { email, taskId } = deleteTaskDto;
+  async deleteTask(user: User, deleteTaskDto: DeleteTaskDto): Promise<CreatedTask> {
+    const { uid, email } = user;
+    const { taskId } = deleteTaskDto;
+
     try {
-      const result: CreatedTask = await this.findOneBy({ email, taskId });
+      const result: CreatedTask = await this.findOneBy({ uid, taskId });
 
       if (result) {
         await this.remove(result);
@@ -72,8 +76,10 @@ export class TaskRepository extends Repository<CreatedTask> {
     }
   }
 
-  async validationTask(createdTodoDto: CreatedTodoDto): Promise<CreatedTask> {
-    const { email, uid, taskId } = createdTodoDto;
+  async findTaskById(user: User, createdTodoDto: CreatedTodoDto): Promise<CreatedTask> {
+    const { email, uid } = user;
+    const { taskId } = createdTodoDto;
+
     try {
       const result: CreatedTask = await this.findOneBy({ uid, taskId });
 

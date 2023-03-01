@@ -26,7 +26,6 @@ export class AuthService {
   constructor(
     private userRepository: UserRepository,
     private tokenRepository: TokenRepository,
-    private jwtService: JwtService,
     private jwtUtil: JwtUtil,
   ) {}
 
@@ -71,11 +70,13 @@ export class AuthService {
       this.logger.log(`User verificated: ${email}`);
 
       const accessPayload: AccessPayload = {
+        uid: registeredUser.uid,
         userName: registeredUser.userName,
         email: registeredUser.email,
       };
 
       const refreshPayload: RefreshPayload = {
+        uid: registeredUser.uid,
         email: registeredUser.email,
       };
 
@@ -106,7 +107,7 @@ export class AuthService {
   async regenerateToken(regenerateTokenDto: RegenerateTokenDto): Promise<RegenerateTokenDto> {
     const { email, accessToken, refreshToken } = regenerateTokenDto;
 
-    const decodedAccessToken = this.jwtUtil.decodeToken(accessToken);
+    const decodedAccessToken: AccessPayload = this.jwtUtil.decodeToken(accessToken);
 
     if (email === decodedAccessToken.email) {
       const storedRefreshToken: UserToken = await this.tokenRepository.findRefreshToken(email, refreshToken);
@@ -116,8 +117,12 @@ export class AuthService {
         throw new BadRequestException('Invalid refresh token');
       }
 
-      const accessPayload: AccessPayload = { userName: decodedAccessToken.userName, email };
-      const refreshPayload: RefreshPayload = { email };
+      const accessPayload: AccessPayload = {
+        uid: decodedAccessToken.uid,
+        userName: decodedAccessToken.userName,
+        email,
+      };
+      const refreshPayload: RefreshPayload = { uid: decodedAccessToken.uid, email };
 
       const newAccessToken: string = this.jwtUtil.generateAccessToken(accessPayload);
       const newRefreshToken: string = this.jwtUtil.generateRefreshToken(refreshPayload);

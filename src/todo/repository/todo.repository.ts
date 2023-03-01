@@ -1,6 +1,8 @@
 import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
+import { User } from 'src/auth/entity/user.entity';
 import { DataSource, Repository } from 'typeorm';
 import { CreatedTodoDto } from '../dto/create-todo.dto';
+import { DeleteTodoDto } from '../dto/delete-todo.dto';
 import { CreatedTodo } from '../entity/created-todo.entity';
 
 @Injectable()
@@ -11,8 +13,9 @@ export class TodoRepository extends Repository<CreatedTodo> {
     super(CreatedTodo, dataSource.createEntityManager());
   }
 
-  async createTodo(createdTodoDto: CreatedTodoDto): Promise<CreatedTodo> {
-    const { uid, taskId, email, description } = createdTodoDto;
+  async createTodo(user: User, createdTodoDto: CreatedTodoDto): Promise<CreatedTodo> {
+    const { uid, email } = user;
+    const { taskId, description } = createdTodoDto;
 
     try {
       const result: CreatedTodo = await this.create({
@@ -26,6 +29,26 @@ export class TodoRepository extends Repository<CreatedTodo> {
       return result;
     } catch (err) {
       this.logger.log(`DB error occurred(Todo saving process): ${email}`);
+      throw new InternalServerErrorException('DB error occurred');
+    }
+  }
+
+  async deleteTodo(user: User, deleteTodoDto: DeleteTodoDto): Promise<CreatedTodo> {
+    const { uid, email } = user;
+    const { todoId } = deleteTodoDto;
+
+    try {
+      const result: CreatedTodo = await this.findOneBy({ uid, todoId });
+
+      if (result) {
+        await this.remove(result);
+      }
+
+      result.todoId = todoId;
+
+      return result;
+    } catch (err) {
+      this.logger.log(`DB error occurred(Todo deleting process): ${email}`);
       throw new InternalServerErrorException('DB error occurred');
     }
   }

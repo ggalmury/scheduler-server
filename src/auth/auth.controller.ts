@@ -11,17 +11,17 @@ import { JwtRefreshTokenGuard } from './guard/jwt-refresh.guard';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @Post('/signup')
+  @Post('signup')
   async signUp(@Body(ValidationPipe) signUpDto: SignUpDto): Promise<RegisteredUserDto> {
     return await this.authService.register(signUpDto);
   }
 
-  @Post('/signin')
+  @Post('signin')
   async signIn(@Body(ValidationPipe) signInDto: SignInDto): Promise<LoggedInUserDto> {
     return await this.authService.login(signInDto);
   }
 
-  @Post('/token')
+  @Post('token')
   @UseGuards(JwtRefreshTokenGuard)
   async newToken(@Body(ValidationPipe) regenerateTokenDto: RegenerateTokenDto): Promise<RegenerateTokenDto> {
     return await this.authService.regenerateToken(regenerateTokenDto);

@@ -15,12 +15,13 @@ export class TodoRepository extends Repository<CreatedTodo> {
 
   async createTodo(user: User, createdTodoDto: CreatedTodoDto): Promise<CreatedTodo> {
     const { uid, email } = user;
-    const { taskId, description } = createdTodoDto;
+    const { taskId, description, date } = createdTodoDto;
 
     try {
       const result: CreatedTodo = await this.create({
         uid,
         description,
+        date: new Date(date),
         createdTask: { taskId },
       }).save();
 
@@ -45,6 +46,8 @@ export class TodoRepository extends Repository<CreatedTodo> {
       }
 
       result.todoId = todoId;
+
+      this.logger.log(`Todo successfully deleted: ${email}`);
 
       return result;
     } catch (err) {

@@ -17,10 +17,10 @@ export class CreatedTask extends BaseEntity {
   @Column({ type: 'varchar', nullable: false })
   email: string;
 
-  @Column({ type: 'varchar', default: 'no title' })
+  @Column({ type: 'varchar' })
   title: string;
 
-  @Column({ type: 'varchar', default: 'no description' })
+  @Column({ type: 'varchar' })
   description: string;
 
   @Column({ type: 'varchar' })
@@ -43,6 +43,9 @@ export class CreatedTask extends BaseEntity {
 
   @Column({ type: 'date' })
   createdDt: Date;
+
+  @Column({ type: 'boolean', default: false })
+  state: boolean;
 
   @OneToMany(() => CreatedTodo, (todo) => todo.createdTask, { eager: true })
   createdTodo: CreatedTodo[];

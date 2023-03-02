@@ -1,9 +1,9 @@
-import { Body, Controller, Post, Req, UseGuards, UseFilters } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { User } from 'src/auth/entity/user.entity';
 import { JwtAccessTokenGuard } from 'src/auth/guard/jwt-access.guard';
 import { ExtractUser } from 'src/decorator/extract-user.decorator';
 import { CreatedTaskDto } from './dto/create-task.dto';
-import { DeleteTaskDto } from './dto/delete-task.dto';
+import { DeleteOrDoneTaskDto } from './dto/delete-task.dto';
 import { CreatedTask } from './entity/created-task.entity';
 import { TaskService } from './task.service';
 
@@ -25,7 +25,13 @@ export class TaskController {
 
   @Post('delete')
   @UseGuards(JwtAccessTokenGuard)
-  async deleteTask(@ExtractUser() user: User, @Body() deleteTaskDto: DeleteTaskDto): Promise<CreatedTask> {
+  async deleteTask(@ExtractUser() user: User, @Body() deleteTaskDto: DeleteOrDoneTaskDto): Promise<CreatedTask> {
     return await this.taskService.deleteTask(user, deleteTaskDto);
+  }
+
+  @Post('done')
+  @UseGuards(JwtAccessTokenGuard)
+  async doneTask(@ExtractUser() user: User, @Body() doneTaskDto: DeleteOrDoneTaskDto): Promise<CreatedTask> {
+    return await this.taskService.doneTask(user, doneTaskDto);
   }
 }

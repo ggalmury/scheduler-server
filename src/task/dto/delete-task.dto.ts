@@ -1,3 +1,3 @@
-export class DeleteTaskDto {
+export class DeleteOrDoneTaskDto {
   taskId: number;
 }

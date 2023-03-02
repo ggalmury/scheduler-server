@@ -1,9 +1,10 @@
 import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { User } from 'src/auth/entity/user.entity';
+import { TaskColor, TaskType } from 'src/enum/task-enum';
 import { CreatedTodoDto } from 'src/todo/dto/create-todo.dto';
 import { DataSource, Repository } from 'typeorm';
 import { CreatedTaskDto } from '../dto/create-task.dto';
-import { DeleteTaskDto } from '../dto/delete-task.dto';
+import { DeleteOrDoneTaskDto } from '../dto/delete-task.dto';
 import { CreatedTask } from '../entity/created-task.entity';
 
 @Injectable()
@@ -56,7 +57,7 @@ export class TaskRepository extends Repository<CreatedTask> {
     }
   }
 
-  async deleteTask(user: User, deleteTaskDto: DeleteTaskDto): Promise<CreatedTask> {
+  async deleteTask(user: User, deleteTaskDto: DeleteOrDoneTaskDto): Promise<CreatedTask> {
     const { uid, email } = user;
     const { taskId } = deleteTaskDto;
 
@@ -70,6 +71,32 @@ export class TaskRepository extends Repository<CreatedTask> {
       result.taskId = taskId;
 
       return result;
+    } catch (err) {
+      this.logger.log(`DB error occurred(Task deleting process): ${email}`);
+      throw new InternalServerErrorException('DB error occurred');
+    }
+  }
+
+  async doneTask(user: User, doneTaskDto: DeleteOrDoneTaskDto): Promise<CreatedTask> {
+    const { uid, email } = user;
+    const { taskId } = doneTaskDto;
+
+    try {
+      const result: CreatedTask = await this.findOneBy({ uid, taskId });
+
+      if (result) {
+        result.state = true;
+
+        if (result.type === TaskType.MAIN_TASK) {
+          result.color = TaskColor.OFFICIAL_TASK_FINISH;
+        } else {
+          result.color = TaskColor.PERSONAL_TASK_FINISH;
+        }
+
+        await this.save(result);
+
+        return result;
+      }
     } catch (err) {
       this.logger.log(`DB error occurred(Task deleting process): ${email}`);
       throw new InternalServerErrorException('DB error occurred');

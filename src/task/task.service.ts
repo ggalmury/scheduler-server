@@ -2,6 +2,7 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { User } from 'src/auth/entity/user.entity';
 import { CreatedTaskDto } from './dto/create-task.dto';
 import { DeleteOrDoneTaskDto } from './dto/delete-task.dto';
+import { SearchTaskDto } from './dto/search-task.dto';
 import { CreatedTask } from './entity/created-task.entity';
 import { TaskRepository } from './repository/task.repository';
 
@@ -11,11 +12,13 @@ export class TaskService {
   constructor(private taskRepository: TaskRepository) {}
 
   async createTask(user: User, createdTaskDto: CreatedTaskDto): Promise<CreatedTask> {
-    return await this.taskRepository.createTask(user, createdTaskDto);
+    const test = await this.taskRepository.createTask(user, createdTaskDto);
+    console.log(test);
+    return test;
   }
 
-  async searchTask(user: User): Promise<CreatedTask[]> {
-    const result: CreatedTask[] = await this.taskRepository.searchTask(user);
+  async searchTask(user: User, searchTaskDto: SearchTaskDto): Promise<CreatedTask[]> {
+    const result: CreatedTask[] = await this.taskRepository.searchTask(user, searchTaskDto);
 
     if (!result) {
       this.logger.log(`Task not found: ${user.email}`);

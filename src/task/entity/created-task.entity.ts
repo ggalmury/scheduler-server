@@ -1,5 +1,4 @@
-import { TaskColor, TaskPrivacy, TaskType } from 'src/enum/task-enum';
-import { TaskTime } from 'src/interface/task-interface';
+import { TaskTime } from 'src/types/interface/task-interface';
 import { BaseEntity, BeforeInsert, Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { CreatedTodo } from '../../todo/entity/created-todo.entity';
 
@@ -24,7 +23,7 @@ export class CreatedTask extends BaseEntity {
   description: string;
 
   @Column({ type: 'varchar' })
-  color: TaskColor;
+  color: string;
 
   @Column({ type: 'varchar' })
   location: string;
@@ -36,10 +35,10 @@ export class CreatedTask extends BaseEntity {
   time: TaskTime;
 
   @Column({ type: 'varchar' })
-  privacy: TaskPrivacy;
+  privacy: string;
 
   @Column({ type: 'varchar' })
-  type: TaskType;
+  type: string;
 
   @Column({ type: 'date' })
   createdDt: Date;

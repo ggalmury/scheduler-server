@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { AccessPayload, RefreshPayload } from 'src/interface/auth-interface';
+import { AccessPayload, RefreshPayload } from 'src/types/interface/auth-interface';
 
 @Injectable()
 export class JwtUtil {

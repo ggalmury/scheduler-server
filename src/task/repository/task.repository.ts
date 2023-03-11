@@ -1,10 +1,10 @@
 import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { User } from 'src/auth/entity/user.entity';
-import { TaskColor, TaskType } from 'src/enum/task-enum';
 import { CreatedTodoDto } from 'src/todo/dto/create-todo.dto';
-import { DataSource, Repository } from 'typeorm';
+import { Between, DataSource, Repository } from 'typeorm';
 import { CreatedTaskDto } from '../dto/create-task.dto';
 import { DeleteOrDoneTaskDto } from '../dto/delete-task.dto';
+import { SearchTaskDto } from '../dto/search-task.dto';
 import { CreatedTask } from '../entity/created-task.entity';
 
 @Injectable()
@@ -17,7 +17,7 @@ export class TaskRepository extends Repository<CreatedTask> {
 
   async createTask(user: User, createdTaskDto: CreatedTaskDto): Promise<CreatedTask> {
     const { uid, userName, email } = user;
-    const { title, description, color, location, date, time, privacy, type } = createdTaskDto;
+    const { title, description, location, date, time, privacy, type } = createdTaskDto;
 
     try {
       const result: CreatedTask = await this.create({
@@ -26,12 +26,12 @@ export class TaskRepository extends Repository<CreatedTask> {
         email,
         title,
         description,
-        color,
+        color: type.color,
         location,
         date: new Date(date),
         time,
         privacy,
-        type,
+        type: type.type,
         createdDt: new Date(),
       }).save();
 
@@ -44,11 +44,14 @@ export class TaskRepository extends Repository<CreatedTask> {
     }
   }
 
-  async searchTask(user: User): Promise<CreatedTask[]> {
+  async searchTask(user: User, searchTaskDto: SearchTaskDto): Promise<CreatedTask[]> {
     const { uid, email } = user;
+    const { startOfWeek, endOfWeek } = searchTaskDto;
 
     try {
-      const result: CreatedTask[] = await this.findBy({ uid });
+      const result: CreatedTask[] = await this.find({
+        where: { uid, date: Between(startOfWeek, endOfWeek) },
+      });
 
       return result;
     } catch (err) {
@@ -87,11 +90,15 @@ export class TaskRepository extends Repository<CreatedTask> {
       if (result) {
         result.state = true;
 
-        if (result.type === TaskType.MAIN_TASK) {
-          result.color = TaskColor.OFFICIAL_TASK_FINISH;
-        } else {
-          result.color = TaskColor.PERSONAL_TASK_FINISH;
-        }
+        // TODO: change color when task finished
+        // switch (result.type) {
+        //   case TaskType.WORK:
+        //     break;
+        //   case TaskType.MEETING:
+        //     break;
+        //   case TaskType.PERSONAL:
+        //     break;
+        // }
 
         await this.save(result);
 

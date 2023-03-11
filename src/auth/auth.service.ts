@@ -12,7 +12,7 @@ import * as bcrypt from 'bcryptjs';
 import { User } from './entity/user.entity';
 import { SignInDto } from './dto/signin.dto';
 import { JwtUtil } from './util/jwt.util';
-import { AccessPayload, RefreshPayload } from '../interface/auth-interface';
+import { AccessPayload, RefreshPayload } from '../types/interface/auth-interface';
 import { TokenRepository } from './repository/token.repository';
 import { RegisteredUserDto } from './dto/registered-user.dto';
 import { LoggedInUserDto } from './dto/loggedIn-user.dto';

@@ -39,7 +39,13 @@ export class TodoRepository extends Repository<CreatedTodo> {
     const { todoId } = deleteTodoDto;
 
     try {
-      const result: CreatedTodo = await this.findOneBy({ uid, todoId });
+      const result: CreatedTodo = await this.createQueryBuilder('createdTodo')
+        .leftJoinAndSelect('createdTodo.createdTask', 'createdTask')
+        .select(['createdTodo', 'createdTask.taskId'])
+        .where({ uid, todoId })
+        .getOne();
+
+      console.log(result);
 
       if (result) {
         await this.remove(result);

@@ -1,5 +1,5 @@
 import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
-import { AccessPayload, RefreshPayload } from 'src/interface/auth-interface';
+import { AccessPayload, RefreshPayload } from 'src/types/interface/auth-interface';
 import { DataSource, Repository } from 'typeorm';
 import { SignUpDto } from '../dto/signup.dto';
 import { User } from '../entity/user.entity';

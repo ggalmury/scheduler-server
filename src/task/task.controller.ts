@@ -15,7 +15,6 @@ export class TaskController {
   @Post('create')
   @UseGuards(JwtAccessTokenGuard)
   async createTask(@ExtractUser() user: User, @Body() createdTaskDto: CreatedTaskDto): Promise<CreatedTask> {
-    console.log(createdTaskDto);
     return await this.taskService.createTask(user, createdTaskDto);
   }
 

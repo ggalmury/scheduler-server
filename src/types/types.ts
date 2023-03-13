@@ -21,6 +21,6 @@ export const TaskType = {
     type: 'personal',
     color: '#ff9cadc1',
   },
-};
+} as const;
 
 export type Types<T> = T[keyof T];

@@ -1,4 +1,4 @@
-import { TaskTime } from 'src/types/interface/task-interface';
+import { DateMatrix, TaskTime } from 'src/types/interface/task-interface';
 import { TaskPrivacy, TaskType, Types } from 'src/types/types';
 
 export class CreatedTaskDto {
@@ -9,4 +9,5 @@ export class CreatedTaskDto {
   time: TaskTime;
   privacy: Types<typeof TaskPrivacy>;
   type: Types<typeof TaskType>;
+  dateMatrix: DateMatrix;
 }

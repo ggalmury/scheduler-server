@@ -45,8 +45,6 @@ export class TodoRepository extends Repository<CreatedTodo> {
         .where({ uid, todoId })
         .getOne();
 
-      console.log(result);
-
       if (result) {
         await this.remove(result);
       }

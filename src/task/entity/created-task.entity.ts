@@ -1,4 +1,4 @@
-import { TaskTime } from 'src/types/interface/task-interface';
+import { DateMatrix, TaskTime } from 'src/types/interface/task-interface';
 import { BaseEntity, BeforeInsert, Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { CreatedTodo } from '../../todo/entity/created-todo.entity';
 
@@ -45,6 +45,9 @@ export class CreatedTask extends BaseEntity {
 
   @Column({ type: 'boolean', default: false })
   state: boolean;
+
+  @Column({ type: 'json' })
+  dateMatrix: DateMatrix;
 
   @OneToMany(() => CreatedTodo, (todo) => todo.createdTask, { eager: true })
   createdTodo: CreatedTodo[];

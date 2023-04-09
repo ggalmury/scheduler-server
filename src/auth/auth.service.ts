@@ -1,11 +1,4 @@
-import {
-  BadRequestException,
-  ConflictException,
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import { SignUpDto } from './dto/signup.dto';
 import { UserRepository } from './repository/user.repository';
 import * as bcrypt from 'bcryptjs';
@@ -17,17 +10,12 @@ import { TokenRepository } from './repository/token.repository';
 import { RegisteredUserDto } from './dto/registered-user.dto';
 import { LoggedInUserDto } from './dto/loggedIn-user.dto';
 import { RegenerateTokenDto } from './dto/regenerate-token.dto';
-import { JwtService } from '@nestjs/jwt';
 import { UserToken } from './entity/token.entity';
 
 @Injectable()
 export class AuthService {
   private logger: Logger = new Logger(AuthService.name);
-  constructor(
-    private userRepository: UserRepository,
-    private tokenRepository: TokenRepository,
-    private jwtUtil: JwtUtil,
-  ) {}
+  constructor(private userRepository: UserRepository, private tokenRepository: TokenRepository, private jwtUtil: JwtUtil) {}
 
   async register(signUpDto: SignUpDto): Promise<RegisteredUserDto> {
     const { userName, email, credential } = signUpDto;
@@ -44,12 +32,7 @@ export class AuthService {
       throw new ConflictException('Duplicate email address');
     }
 
-    const registeredUser: RegisteredUserDto = new RegisteredUserDto(
-      saveUser.uid,
-      saveUser.userName,
-      saveUser.email,
-      saveUser.createdDt,
-    );
+    const registeredUser: RegisteredUserDto = new RegisteredUserDto(saveUser.uid, saveUser.userName, saveUser.email, saveUser.createdDt);
 
     return registeredUser;
   }

@@ -12,8 +12,8 @@ export class CreatedTodo extends BaseEntity {
   @Column()
   description: string;
 
-  @Column({ type: 'date' })
-  date: Date;
+  @Column({ type: 'varchar' })
+  date: string;
 
   @ManyToOne(() => CreatedTask, (task) => task.createdTodo, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'taskId', referencedColumnName: 'taskId' })

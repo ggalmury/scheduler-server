@@ -21,7 +21,7 @@ export class TodoRepository extends Repository<CreatedTodo> {
       const result: CreatedTodo = await this.create({
         uid,
         description,
-        date: new Date(date),
+        date,
         createdTask: { taskId },
       }).save();
 

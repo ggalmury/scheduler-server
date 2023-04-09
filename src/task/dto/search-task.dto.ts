@@ -1,4 +1,4 @@
 export class SearchTaskDto {
-  startOfWeek: Date;
-  endOfWeek: Date;
+  startOfWeek: string;
+  endOfWeek: string;
 }

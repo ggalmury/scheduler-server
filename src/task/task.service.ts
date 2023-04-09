@@ -12,9 +12,7 @@ export class TaskService {
   constructor(private taskRepository: TaskRepository) {}
 
   async createTask(user: User, createdTaskDto: CreatedTaskDto): Promise<CreatedTask> {
-    const test = await this.taskRepository.createTask(user, createdTaskDto);
-    console.log(test);
-    return test;
+    return await this.taskRepository.createTask(user, createdTaskDto);
   }
 
   async searchTask(user: User, searchTaskDto: SearchTaskDto): Promise<CreatedTask[]> {

@@ -1,6 +1,7 @@
 import { IsEmail, IsNotEmpty } from 'class-validator';
 
-export class SignUpDto {
+export class SignUpReqDto {
+  uuid?: string;
   userName: string;
 
   @IsNotEmpty()
@@ -10,7 +11,8 @@ export class SignUpDto {
   @IsNotEmpty()
   credential: string;
 
-  constructor(userName: string, email: string, credential: string) {
+  constructor(uuid: string, userName: string, email: string, credential: string) {
+    this.uuid = uuid;
     this.userName = userName;
     this.email = email;
     this.credential = credential;

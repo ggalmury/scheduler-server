@@ -1,23 +1,23 @@
 import { Body, Controller, Post, UseGuards, ValidationPipe } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LoggedInUserDto } from './dto/loggedIn-user.dto';
 import { RegenerateTokenDto } from './dto/regenerate-token.dto';
-import { RegisteredUserDto } from './dto/registered-user.dto';
-import { SignInDto } from './dto/signin.dto';
-import { SignUpDto } from './dto/signup.dto';
+import { SignInReqDto } from './dto/signin-req.dto';
+import { SignUpReqDto } from './dto/signup-req.dto';
 import { JwtRefreshTokenGuard } from './guard/jwt-refresh.guard';
+import { SignUpResDto } from './dto/signup-res.dto';
+import { SignInResDto } from './dto/signin-res.dto';
 
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('signup')
-  async signUp(@Body(ValidationPipe) signUpDto: SignUpDto): Promise<RegisteredUserDto> {
+  async signUp(@Body(ValidationPipe) signUpDto: SignUpReqDto): Promise<SignUpResDto> {
     return await this.authService.register(signUpDto);
   }
 
   @Post('signin')
-  async signIn(@Body(ValidationPipe) signInDto: SignInDto): Promise<LoggedInUserDto> {
+  async signIn(@Body(ValidationPipe) signInDto: SignInReqDto): Promise<SignInResDto> {
     return await this.authService.login(signInDto);
   }
 

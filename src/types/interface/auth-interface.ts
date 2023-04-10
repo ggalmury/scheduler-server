@@ -1,11 +1,11 @@
 export interface AccessPayload {
-  uid: number;
+  uuid: string;
   userName: string;
   email: string;
 }
 
 export interface RefreshPayload {
-  uid: number;
+  uuid: string;
   email: string;
 }
 

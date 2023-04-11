@@ -26,6 +26,7 @@ export class TokenRepository extends Repository<UserToken> {
   }
 
   async findRefreshToken(uuid: string, refreshToken: string): Promise<UserToken> {
+    // TODO: exception handling
     const uuidBinary: Buffer = uuidToBinary(uuid);
 
     const getRefreshToken: UserToken = await this.findOneBy({ uuid: uuidBinary, refreshToken });

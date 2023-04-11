@@ -1,12 +1,16 @@
+import { LoginPlatformType } from '../types';
+
 export interface AccessPayload {
   uuid: string;
   userName: string;
   email: string;
+  loginType: LoginPlatformType;
 }
 
 export interface RefreshPayload {
   uuid: string;
   email: string;
+  loginType: LoginPlatformType;
 }
 
 export interface GoogleUserAccount {

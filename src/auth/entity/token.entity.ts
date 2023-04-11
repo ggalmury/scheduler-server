@@ -6,6 +6,6 @@ export class UserToken extends BaseEntity {
   @PrimaryColumn({ type: 'binary', length: 16 })
   uuid: Buffer;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'text' })
   refreshToken: string;
 }

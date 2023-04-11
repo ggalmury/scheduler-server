@@ -1,28 +1,53 @@
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import axios, { AxiosResponse } from 'axios';
 import { JwtUtil } from './util/jwt.util';
 import { GoogleCodeDto } from './dto/google-code.dto';
-import axios, { AxiosResponse } from 'axios';
-import { GoogleUserAccount } from 'src/types/interface/auth-interface';
+import { AccessPayload, GoogleUserAccount, RefreshPayload } from 'src/types/interface/auth-interface';
 import { GoogleRepository } from './repository/google.repository';
 import { GoogleUserDto } from './dto/google-user.dto';
-import { generateNewUuidV1 } from './util/uuid.util';
+import { TokenRepository } from './repository/token.repository';
+import { LoginPlatform } from 'src/types/types';
 
 @Injectable()
 export class GoogleService {
   private logger: Logger = new Logger(GoogleService.name);
 
-  constructor(private jwtUtil: JwtUtil, private googleRepository: GoogleRepository) {}
+  constructor(private jwtUtil: JwtUtil, private googleRepository: GoogleRepository, private tokenRepository: TokenRepository) {}
 
   async googleLogin(googleCodeDto: GoogleCodeDto): Promise<GoogleUserDto> {
     const { code } = googleCodeDto;
+    console.log(code);
 
     const googleAccessToken: string = await this.getAccessTokenFromGoogle(code);
+    console.log(googleAccessToken);
 
     const userData: GoogleUserAccount = await this.getUserInfoFromGoogle(googleAccessToken);
+    console.log(userData);
 
     const googleUserDto: GoogleUserDto = new GoogleUserDto(userData.name, userData.email, new Date());
 
     const result: GoogleUserDto = await this.googleRepository.registerOfLogin(googleUserDto);
+
+    const accessPayload: AccessPayload = {
+      uuid: result.uuid,
+      userName: result.userName,
+      email: result.email,
+      loginType: LoginPlatform.google,
+    };
+
+    const refreshPayload: RefreshPayload = {
+      uuid: result.uuid,
+      email: result.email,
+      loginType: LoginPlatform.google,
+    };
+
+    const accessToken: string = this.jwtUtil.generateAccessToken(accessPayload);
+    const refreshToken: string = this.jwtUtil.generateRefreshToken(refreshPayload);
+
+    await this.tokenRepository.saveRefreshToken(result.uuid, result.email, refreshToken);
+
+    result.accessToken = accessToken;
+    result.refreshToken = refreshToken;
 
     return result;
   }
@@ -53,13 +78,14 @@ export class GoogleService {
   }
 
   async getUserInfoFromGoogle(accessToken: string): Promise<GoogleUserAccount> {
+    const url: string = 'https://www.googleapis.com/oauth2/v3/userinfo';
     const config = {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     };
 
-    const response: AxiosResponse = await axios.get('https://www.googleapis.com/oauth2/v3/userinfo', config);
+    const response: AxiosResponse = await axios.get(url, config);
     return response.data;
   }
 }

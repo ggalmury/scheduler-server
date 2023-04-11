@@ -1,3 +1,6 @@
+import { GoogleUser } from 'src/auth/entity/google.entity';
+import { User } from 'src/auth/entity/user.entity';
+
 export const TaskPrivacy = {
   public: 'public',
   private: 'private',
@@ -23,4 +26,12 @@ export const TaskType = {
   },
 } as const;
 
-export type Types<T> = T[keyof T];
+export const LoginPlatform = {
+  default: 'default',
+  google: 'google',
+};
+
+export type TaskPrivacyType = (typeof TaskPrivacy)[keyof typeof TaskPrivacy];
+export type TaskTypeType = (typeof TaskType)[keyof typeof TaskType];
+export type LoginPlatformType = (typeof LoginPlatform)[keyof typeof LoginPlatform];
+export type UserPlatformType = User | GoogleUser | null;

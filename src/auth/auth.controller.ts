@@ -1,9 +1,9 @@
 import { Body, Controller, Post, UseGuards, ValidationPipe } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { JwtRefreshTokenGuard } from './guard/jwt-refresh.guard';
 import { RegenerateTokenDto } from './dto/regenerate-token.dto';
 import { SignInReqDto } from './dto/signin-req.dto';
 import { SignUpReqDto } from './dto/signup-req.dto';
-import { JwtRefreshTokenGuard } from './guard/jwt-refresh.guard';
 import { SignUpResDto } from './dto/signup-res.dto';
 import { SignInResDto } from './dto/signin-res.dto';
 

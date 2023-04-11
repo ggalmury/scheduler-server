@@ -1,9 +1,9 @@
 import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
-import { User } from 'src/auth/entity/user.entity';
 import { DataSource, Repository } from 'typeorm';
 import { CreatedTodoDto } from '../dto/create-todo.dto';
 import { DeleteTodoDto } from '../dto/delete-todo.dto';
 import { CreatedTodo } from '../entity/created-todo.entity';
+import { UserPlatformType } from 'src/types/types';
 
 @Injectable()
 export class TodoRepository extends Repository<CreatedTodo> {
@@ -13,7 +13,7 @@ export class TodoRepository extends Repository<CreatedTodo> {
     super(CreatedTodo, dataSource.createEntityManager());
   }
 
-  async createTodo(user: User, createdTodoDto: CreatedTodoDto): Promise<CreatedTodo> {
+  async createTodo(user: UserPlatformType, createdTodoDto: CreatedTodoDto): Promise<CreatedTodo> {
     const { uid, email } = user;
     const { taskId, description, date } = createdTodoDto;
 
@@ -34,7 +34,7 @@ export class TodoRepository extends Repository<CreatedTodo> {
     }
   }
 
-  async deleteTodo(user: User, deleteTodoDto: DeleteTodoDto): Promise<CreatedTodo> {
+  async deleteTodo(user: UserPlatformType, deleteTodoDto: DeleteTodoDto): Promise<CreatedTodo> {
     const { uid, email } = user;
     const { todoId } = deleteTodoDto;
 

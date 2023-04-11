@@ -1,11 +1,11 @@
 import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
-import { User } from 'src/auth/entity/user.entity';
 import { CreatedTodoDto } from 'src/todo/dto/create-todo.dto';
 import { Between, DataSource, Repository } from 'typeorm';
 import { CreatedTaskDto } from '../dto/create-task.dto';
 import { DeleteOrDoneTaskDto } from '../dto/delete-task.dto';
 import { SearchTaskDto } from '../dto/search-task.dto';
 import { CreatedTask } from '../entity/created-task.entity';
+import { UserPlatformType } from 'src/types/types';
 
 @Injectable()
 export class TaskRepository extends Repository<CreatedTask> {
@@ -15,7 +15,7 @@ export class TaskRepository extends Repository<CreatedTask> {
     super(CreatedTask, dataSource.createEntityManager());
   }
 
-  async createTask(user: User, createdTaskDto: CreatedTaskDto): Promise<CreatedTask> {
+  async createTask(user: UserPlatformType, createdTaskDto: CreatedTaskDto): Promise<CreatedTask> {
     const { uid, userName, email } = user;
     const { title, description, location, date, time, privacy, type } = createdTaskDto;
 
@@ -44,7 +44,7 @@ export class TaskRepository extends Repository<CreatedTask> {
     }
   }
 
-  async searchTask(user: User, searchTaskDto: SearchTaskDto): Promise<CreatedTask[]> {
+  async searchTask(user: UserPlatformType, searchTaskDto: SearchTaskDto): Promise<CreatedTask[]> {
     const { uid, email } = user;
     const { startOfWeek, endOfWeek } = searchTaskDto;
 
@@ -60,7 +60,7 @@ export class TaskRepository extends Repository<CreatedTask> {
     }
   }
 
-  async deleteTask(user: User, deleteTaskDto: DeleteOrDoneTaskDto): Promise<CreatedTask> {
+  async deleteTask(user: UserPlatformType, deleteTaskDto: DeleteOrDoneTaskDto): Promise<CreatedTask> {
     const { uid, email } = user;
     const { taskId } = deleteTaskDto;
 
@@ -80,7 +80,7 @@ export class TaskRepository extends Repository<CreatedTask> {
     }
   }
 
-  async doneTask(user: User, doneTaskDto: DeleteOrDoneTaskDto): Promise<CreatedTask> {
+  async doneTask(user: UserPlatformType, doneTaskDto: DeleteOrDoneTaskDto): Promise<CreatedTask> {
     const { uid, email } = user;
     const { taskId } = doneTaskDto;
 
@@ -110,7 +110,7 @@ export class TaskRepository extends Repository<CreatedTask> {
     }
   }
 
-  async findTaskById(user: User, createdTodoDto: CreatedTodoDto): Promise<CreatedTask> {
+  async findTaskById(user: UserPlatformType, createdTodoDto: CreatedTodoDto): Promise<CreatedTask> {
     const { email, uid } = user;
     const { taskId } = createdTodoDto;
 

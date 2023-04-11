@@ -1,5 +1,4 @@
 import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
-import { AccessPayload, RefreshPayload } from 'src/types/interface/auth-interface';
 import { DataSource, Repository } from 'typeorm';
 import { SignUpReqDto } from '../dto/signup-req.dto';
 import { User } from '../entity/user.entity';
@@ -55,36 +54,6 @@ export class UserRepository extends Repository<User> {
       return signInResDto;
     } catch (err) {
       this.logger.log(`DB error occurred(User finding process): ${email}`);
-      throw new InternalServerErrorException('DB error occurred');
-    }
-  }
-
-  async validateAccessPayload(accessPayload: AccessPayload): Promise<User> {
-    const { uuid, userName, email } = accessPayload;
-
-    const uuidBinary: Buffer = uuidToBinary(uuid);
-
-    try {
-      const user: User = await this.findOneBy({ uuid: uuidBinary, userName, email });
-
-      return user;
-    } catch (err) {
-      this.logger.log(`DB error occurred(Finding user in access payload): ${email}`);
-      throw new InternalServerErrorException('DB error occurred');
-    }
-  }
-
-  async validateRefreshPayload(refreshPayload: RefreshPayload): Promise<User> {
-    const { uuid, email } = refreshPayload;
-
-    const uuidBinary: Buffer = uuidToBinary(uuid);
-
-    try {
-      const user: User = await this.findOneBy({ uuid: uuidBinary, email });
-
-      return user;
-    } catch (err) {
-      this.logger.log(`DB error occurred(Finding user in refresh payload): ${email}`);
       throw new InternalServerErrorException('DB error occurred');
     }
   }

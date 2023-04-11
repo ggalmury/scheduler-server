@@ -1,7 +1,7 @@
 import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
+import * as bcrypt from 'bcryptjs';
 import { SignUpReqDto } from './dto/signup-req.dto';
 import { UserRepository } from './repository/user.repository';
-import * as bcrypt from 'bcryptjs';
 import { SignInReqDto } from './dto/signin-req.dto';
 import { JwtUtil } from './util/jwt.util';
 import { AccessPayload, RefreshPayload } from '../types/interface/auth-interface';
@@ -11,6 +11,7 @@ import { UserToken } from './entity/token.entity';
 import { generateNewUuidV1 } from './util/uuid.util';
 import { SignUpResDto } from './dto/signup-res.dto';
 import { SignInResDto } from './dto/signin-res.dto';
+import { LoginPlatform } from 'src/types/types';
 
 @Injectable()
 export class AuthService {
@@ -54,11 +55,13 @@ export class AuthService {
         uuid: registeredUser.uuid,
         userName: registeredUser.userName,
         email: registeredUser.email,
+        loginType: LoginPlatform.default,
       };
 
       const refreshPayload: RefreshPayload = {
         uuid: registeredUser.uuid,
         email: registeredUser.email,
+        loginType: LoginPlatform.default,
       };
 
       const accessToken: string = this.jwtUtil.generateAccessToken(accessPayload);
@@ -98,8 +101,10 @@ export class AuthService {
         uuid: decodedAccessToken.uuid,
         userName: decodedAccessToken.userName,
         email,
+        loginType: decodedAccessToken.loginType,
       };
-      const refreshPayload: RefreshPayload = { uuid: decodedAccessToken.uuid, email };
+
+      const refreshPayload: RefreshPayload = { uuid: decodedAccessToken.uuid, email, loginType: decodedAccessToken.loginType };
 
       const newAccessToken: string = this.jwtUtil.generateAccessToken(accessPayload);
       const newRefreshToken: string = this.jwtUtil.generateRefreshToken(refreshPayload);

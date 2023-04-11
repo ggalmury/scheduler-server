@@ -10,10 +10,11 @@ import { JwtAccessStrategy } from './guard/strategy/access.strategy';
 import { JwtRefreshStrategy } from './guard/strategy/refresh.strategy';
 import { GoogleController } from './google.controller';
 import { GoogleService } from './google.service';
+import { GoogleRepository } from './repository/google.repository';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UserRepository, TokenRepository]), JwtModule.register({})],
-  providers: [AuthService, GoogleService, UserRepository, TokenRepository, JwtUtil, JwtAccessStrategy, JwtRefreshStrategy],
+  imports: [TypeOrmModule.forFeature([UserRepository, TokenRepository, GoogleRepository]), JwtModule.register({})],
+  providers: [AuthService, GoogleService, UserRepository, GoogleRepository, TokenRepository, JwtUtil, JwtAccessStrategy, JwtRefreshStrategy],
   controllers: [AuthController, GoogleController],
 })
 export class AuthModule {}

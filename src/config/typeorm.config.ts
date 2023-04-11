@@ -1,4 +1,5 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { GoogleUser } from 'src/auth/entity/google.entity';
 import { UserToken } from 'src/auth/entity/token.entity';
 import { User } from 'src/auth/entity/user.entity';
 import { CreatedTask } from 'src/task/entity/created-task.entity';
@@ -13,5 +14,5 @@ export const typeOrmConfig: TypeOrmModuleOptions = {
   database: process.env.DB_DATABASE,
   synchronize: true,
   namingStrategy: new SnakeNamingStrategy(),
-  entities: [User, UserToken, CreatedTask, CreatedTodo],
+  entities: [User, GoogleUser, UserToken, CreatedTask, CreatedTodo],
 };

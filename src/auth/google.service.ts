@@ -3,21 +3,28 @@ import { JwtUtil } from './util/jwt.util';
 import { GoogleCodeDto } from './dto/google-code.dto';
 import axios, { AxiosResponse } from 'axios';
 import { GoogleUserAccount } from 'src/types/interface/auth-interface';
+import { GoogleRepository } from './repository/google.repository';
+import { GoogleUserDto } from './dto/google-user.dto';
+import { generateNewUuidV1 } from './util/uuid.util';
 
 @Injectable()
 export class GoogleService {
   private logger: Logger = new Logger(GoogleService.name);
 
-  constructor(private jwtUtil: JwtUtil) {}
+  constructor(private jwtUtil: JwtUtil, private googleRepository: GoogleRepository) {}
 
-  async getUser(googleCodeDto: GoogleCodeDto): Promise<GoogleUserAccount> {
+  async googleLogin(googleCodeDto: GoogleCodeDto): Promise<GoogleUserDto> {
     const { code } = googleCodeDto;
 
     const googleAccessToken: string = await this.getAccessTokenFromGoogle(code);
 
     const userData: GoogleUserAccount = await this.getUserInfoFromGoogle(googleAccessToken);
 
-    return userData;
+    const googleUserDto: GoogleUserDto = new GoogleUserDto(userData.name, userData.email, new Date());
+
+    const result: GoogleUserDto = await this.googleRepository.registerOfLogin(googleUserDto);
+
+    return result;
   }
 
   async getAccessTokenFromGoogle(code: string): Promise<string> {
@@ -51,6 +58,7 @@ export class GoogleService {
         Authorization: `Bearer ${accessToken}`,
       },
     };
+
     const response: AxiosResponse = await axios.get('https://www.googleapis.com/oauth2/v3/userinfo', config);
     return response.data;
   }

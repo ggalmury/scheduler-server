@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Post, ValidationPipe } from '@nestjs/common';
 import { GoogleService } from './google.service';
 import { GoogleCodeDto } from './dto/google-code.dto';
+import { GoogleUserDto } from './dto/google-user.dto';
 
 @Controller('google')
 export class GoogleController {
@@ -11,7 +12,7 @@ export class GoogleController {
     return url;
   }
   @Post('user')
-  async handleGoogleLogin(@Body() googleCodeDto: GoogleCodeDto): Promise<any> {
-    return await this.googleService.getUser(googleCodeDto);
+  async handleGoogleLogin(@Body() googleCodeDto: GoogleCodeDto): Promise<GoogleUserDto> {
+    return await this.googleService.googleLogin(googleCodeDto);
   }
 }

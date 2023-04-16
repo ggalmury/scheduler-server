@@ -15,6 +15,9 @@ export class GoogleUser extends BaseEntity {
   @Column({ type: 'varchar', nullable: false, unique: true })
   email: string;
 
+  @Column({ type: 'varchar' })
+  image: string;
+
   @Column({ type: 'date' })
   createdDt: Date;
 }

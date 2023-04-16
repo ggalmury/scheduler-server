@@ -28,7 +28,7 @@ export class UserRepository extends Repository<User> {
         createdDt: new Date(),
       }).save();
 
-      const signUpResDto: SignUpResDto = new SignUpResDto(result.uid, uuid, result.userName, result.email, result.createdDt);
+      const signUpResDto: SignUpResDto = new SignUpResDto(result.uid, uuid, result.userName, result.email, result.createdDt, true);
 
       this.logger.log(`User successfully created: ${email}`);
 

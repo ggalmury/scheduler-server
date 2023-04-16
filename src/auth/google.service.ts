@@ -16,15 +16,12 @@ export class GoogleService {
 
   async googleLogin(googleCodeDto: GoogleCodeDto): Promise<GoogleUserDto> {
     const { code } = googleCodeDto;
-    console.log(code);
 
     const googleAccessToken: string = await this.getAccessTokenFromGoogle(code);
-    console.log(googleAccessToken);
 
     const userData: GoogleUserAccount = await this.getUserInfoFromGoogle(googleAccessToken);
-    console.log(userData);
 
-    const googleUserDto: GoogleUserDto = new GoogleUserDto(userData.name, userData.email, new Date());
+    const googleUserDto: GoogleUserDto = new GoogleUserDto(userData.name, userData.email, new Date(), userData.picture);
 
     const result: GoogleUserDto = await this.googleRepository.registerOfLogin(googleUserDto);
 

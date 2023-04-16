@@ -13,7 +13,7 @@ export class GoogleRepository extends Repository<GoogleUser> {
   }
 
   async registerOfLogin(googleUserDto: GoogleUserDto): Promise<GoogleUserDto> {
-    const { userName, email, createdDt } = googleUserDto;
+    const { userName, email, createdDt, image } = googleUserDto;
 
     const registeredUser: GoogleUser = await this.findOneBy({ email });
 
@@ -35,6 +35,7 @@ export class GoogleRepository extends Repository<GoogleUser> {
           uuid: binaryUuid,
           userName,
           email,
+          image,
           createdDt,
         }).save();
 

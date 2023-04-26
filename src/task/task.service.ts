@@ -1,22 +1,23 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { CreatedTaskDto } from './dto/create-task.dto';
-import { DeleteOrDoneTaskDto } from './dto/delete-task.dto';
-import { SearchTaskDto } from './dto/search-task.dto';
+import { TaskCreateReqDto } from './dto/task-create-req.dto';
+import { TaskModifyReqDto } from './dto/task-modify-req.dto';
+import { TaskSearchReqDto } from './dto/task-search-req.dto';
 import { CreatedTask } from './entity/created-task.entity';
 import { TaskRepository } from './repository/task.repository';
 import { UserPlatformType } from 'src/types/types';
+import { TaskResDto } from './dto/task-res.dto';
 
 @Injectable()
 export class TaskService {
   private logger: Logger = new Logger(TaskService.name);
   constructor(private taskRepository: TaskRepository) {}
 
-  async createTask(user: UserPlatformType, createdTaskDto: CreatedTaskDto): Promise<CreatedTask> {
-    return await this.taskRepository.createTask(user, createdTaskDto);
+  async createTask(user: UserPlatformType, taskCreateReqDto: TaskCreateReqDto): Promise<TaskResDto> {
+    return await this.taskRepository.createTask(user, taskCreateReqDto);
   }
 
-  async searchTask(user: UserPlatformType, searchTaskDto: SearchTaskDto): Promise<CreatedTask[]> {
-    const result: CreatedTask[] = await this.taskRepository.searchTask(user, searchTaskDto);
+  async searchTask(user: UserPlatformType, taskSearchReqDto: TaskSearchReqDto): Promise<TaskResDto[]> {
+    const result: TaskResDto[] = await this.taskRepository.searchTask(user, taskSearchReqDto);
 
     if (!result) {
       this.logger.log(`Task not found: ${user.email}`);
@@ -26,8 +27,8 @@ export class TaskService {
     return result;
   }
 
-  async deleteTask(user: UserPlatformType, deleteTaskDto: DeleteOrDoneTaskDto): Promise<CreatedTask> {
-    const result: CreatedTask = await this.taskRepository.deleteTask(user, deleteTaskDto);
+  async deleteTask(user: UserPlatformType, taskModifyReqDto: TaskModifyReqDto): Promise<CreatedTask> {
+    const result: CreatedTask = await this.taskRepository.deleteTask(user, taskModifyReqDto);
 
     if (!result) {
       this.logger.log(`Task not found: ${user.email}`);
@@ -37,8 +38,8 @@ export class TaskService {
     return result;
   }
 
-  async doneTask(user: UserPlatformType, doneTaskDto: DeleteOrDoneTaskDto): Promise<CreatedTask> {
-    const result: CreatedTask = await this.taskRepository.doneTask(user, doneTaskDto);
+  async doneTask(user: UserPlatformType, taskModifyReqDto: TaskModifyReqDto): Promise<CreatedTask> {
+    const result: CreatedTask = await this.taskRepository.doneTask(user, taskModifyReqDto);
 
     if (!result) {
       this.logger.log(`Task not found: ${user.email}`);

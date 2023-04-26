@@ -1,7 +1,7 @@
 import { TaskTime } from 'src/types/interface/task-interface';
 import { TaskPrivacyType, TaskTypeType } from 'src/types/types';
 
-export class CreatedTaskDto {
+export class TaskCreateReqDto {
   title: string;
   description: string;
   location: string;

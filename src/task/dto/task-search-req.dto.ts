@@ -1,4 +1,4 @@
-export class SearchTaskDto {
+export class TaskSearchReqDto {
   startOfWeek: string;
   endOfWeek: string;
 }

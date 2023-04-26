@@ -1,5 +1,5 @@
 import { TaskTime } from 'src/types/interface/task-interface';
-import { BaseEntity, BeforeInsert, Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, BeforeInsert, Column, Entity, Index, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { CreatedTodo } from '../../todo/entity/created-todo.entity';
 
 @Entity()
@@ -7,8 +7,8 @@ export class CreatedTask extends BaseEntity {
   @PrimaryGeneratedColumn({ type: 'int' })
   taskId: number;
 
-  @Column({ type: 'int', nullable: false })
-  uid: number;
+  @Column({ type: 'binary', length: 16 })
+  uuid: Buffer;
 
   @Column({ type: 'varchar' })
   userName: string;

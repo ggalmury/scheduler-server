@@ -1,11 +1,13 @@
 import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { CreatedTodoDto } from 'src/todo/dto/create-todo.dto';
 import { Between, DataSource, Repository } from 'typeorm';
-import { CreatedTaskDto } from '../dto/create-task.dto';
-import { DeleteOrDoneTaskDto } from '../dto/delete-task.dto';
-import { SearchTaskDto } from '../dto/search-task.dto';
+import { TaskCreateReqDto } from '../dto/task-create-req.dto';
+import { TaskModifyReqDto } from '../dto/task-modify-req.dto';
+import { TaskSearchReqDto } from '../dto/task-search-req.dto';
 import { CreatedTask } from '../entity/created-task.entity';
 import { UserPlatformType } from 'src/types/types';
+import { binaryToUuid, uuidToBinary } from 'src/auth/util/uuid.util';
+import { TaskResDto } from '../dto/task-res.dto';
 
 @Injectable()
 export class TaskRepository extends Repository<CreatedTask> {
@@ -15,13 +17,13 @@ export class TaskRepository extends Repository<CreatedTask> {
     super(CreatedTask, dataSource.createEntityManager());
   }
 
-  async createTask(user: UserPlatformType, createdTaskDto: CreatedTaskDto): Promise<CreatedTask> {
-    const { uid, userName, email } = user;
-    const { title, description, location, date, time, privacy, type } = createdTaskDto;
+  async createTask(user: UserPlatformType, taskCreateReqDto: TaskCreateReqDto): Promise<TaskResDto> {
+    const { uuid, userName, email } = user;
+    const { title, description, location, date, time, privacy, type } = taskCreateReqDto;
 
     try {
       const result: CreatedTask = await this.create({
-        uid,
+        uuid,
         userName,
         email,
         title,
@@ -35,37 +37,75 @@ export class TaskRepository extends Repository<CreatedTask> {
         createdDt: new Date(),
       }).save();
 
+      const taskResDto: TaskResDto = new TaskResDto(
+        result.taskId,
+        binaryToUuid(result.uuid),
+        result.userName,
+        result.email,
+        result.title,
+        result.description,
+        result.color,
+        result.location,
+        result.date,
+        result.time,
+        result.privacy,
+        result.type,
+        result.createdDt,
+        result.state,
+        result.createdTodo,
+      );
+
       this.logger.log(`Task successfully created: ${email}`);
 
-      return result;
+      return taskResDto;
     } catch (err) {
       this.logger.log(`DB error occurred(Task saving process): ${email}`);
       throw new InternalServerErrorException('DB error occurred');
     }
   }
 
-  async searchTask(user: UserPlatformType, searchTaskDto: SearchTaskDto): Promise<CreatedTask[]> {
-    const { uid, email } = user;
-    const { startOfWeek, endOfWeek } = searchTaskDto;
+  async searchTask(user: UserPlatformType, taskSearchReqDto: TaskSearchReqDto): Promise<TaskResDto[]> {
+    const { uuid, email } = user;
+    const { startOfWeek, endOfWeek } = taskSearchReqDto;
 
     try {
       const result: CreatedTask[] = await this.find({
-        where: { uid, date: Between(startOfWeek, endOfWeek) },
+        where: { uuid, date: Between(startOfWeek, endOfWeek) },
       });
 
-      return result;
+      const taskResDto: TaskResDto[] = result.map((value) => {
+        return new TaskResDto(
+          value.taskId,
+          binaryToUuid(value.uuid),
+          value.userName,
+          value.email,
+          value.title,
+          value.description,
+          value.color,
+          value.location,
+          value.date,
+          value.time,
+          value.privacy,
+          value.type,
+          value.createdDt,
+          value.state,
+          value.createdTodo,
+        );
+      });
+
+      return taskResDto;
     } catch (err) {
       this.logger.log(`DB error occurred(Task searching process): ${email}`);
       throw new InternalServerErrorException('DB error occurred');
     }
   }
 
-  async deleteTask(user: UserPlatformType, deleteTaskDto: DeleteOrDoneTaskDto): Promise<CreatedTask> {
-    const { uid, email } = user;
-    const { taskId } = deleteTaskDto;
+  async deleteTask(user: UserPlatformType, taskModifyReqDto: TaskModifyReqDto): Promise<CreatedTask> {
+    const { uuid, email } = user;
+    const { taskId } = taskModifyReqDto;
 
     try {
-      const result: CreatedTask = await this.findOneBy({ uid, taskId });
+      const result: CreatedTask = await this.findOneBy({ uuid, taskId });
 
       if (result) {
         await this.remove(result);
@@ -80,12 +120,12 @@ export class TaskRepository extends Repository<CreatedTask> {
     }
   }
 
-  async doneTask(user: UserPlatformType, doneTaskDto: DeleteOrDoneTaskDto): Promise<CreatedTask> {
-    const { uid, email } = user;
-    const { taskId } = doneTaskDto;
+  async doneTask(user: UserPlatformType, taskModifyReqDto: TaskModifyReqDto): Promise<CreatedTask> {
+    const { uuid, email } = user;
+    const { taskId } = taskModifyReqDto;
 
     try {
-      const result: CreatedTask = await this.findOneBy({ uid, taskId });
+      const result: CreatedTask = await this.findOneBy({ uuid, taskId });
 
       if (result) {
         result.state = true;
@@ -111,11 +151,11 @@ export class TaskRepository extends Repository<CreatedTask> {
   }
 
   async findTaskById(user: UserPlatformType, createdTodoDto: CreatedTodoDto): Promise<CreatedTask> {
-    const { email, uid } = user;
+    const { email, uuid } = user;
     const { taskId } = createdTodoDto;
 
     try {
-      const result: CreatedTask = await this.findOneBy({ uid, taskId });
+      const result: CreatedTask = await this.findOneBy({ uuid, taskId });
 
       return result;
     } catch (err) {

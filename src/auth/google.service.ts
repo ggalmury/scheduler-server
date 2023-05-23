@@ -27,7 +27,7 @@ export class GoogleService {
 
     const accessPayload: AccessPayload = {
       uuid: result.uuid,
-      userName: result.userName,
+      name: result.name,
       email: result.email,
       loginType: LoginPlatform.google,
     };

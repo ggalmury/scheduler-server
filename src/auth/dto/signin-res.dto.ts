@@ -1,20 +1,22 @@
 export class SignInResDto {
-  uid: number;
-  uuid: string;
-  userName: string;
   email: string;
+  name: string;
+  job: string;
+  birth: Date;
   createdDt: Date;
-  hashedCredential?: string;
+  uuid?: string;
+  password?: string;
   accessToken?: string;
   refreshToken?: string;
 
-  constructor(uid: number, uuid: string, userName: string, email: string, createdDt: Date, hashedCredential?: string, accessToken?: string, refreshToken?: string) {
-    this.uid = uid;
-    this.uuid = uuid;
-    this.userName = userName;
+  constructor(email: string, name: string, job: string, birth: Date, createdDt: Date, uuid?: string, password?: string, accessToken?: string, refreshToken?: string) {
     this.email = email;
+    this.name = name;
+    this.job = job;
+    this.birth = birth;
     this.createdDt = createdDt;
-    this.hashedCredential = hashedCredential;
+    this.uuid = uuid;
+    this.password = password;
     this.accessToken = accessToken;
     this.refreshToken = refreshToken;
   }

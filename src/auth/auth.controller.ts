@@ -4,26 +4,31 @@ import { JwtRefreshTokenGuard } from './guard/jwt-refresh.guard';
 import { RegenerateTokenDto } from './dto/regenerate-token.dto';
 import { SignInReqDto } from './dto/signin-req.dto';
 import { SignUpReqDto } from './dto/signup-req.dto';
-import { SignUpResDto } from './dto/signup-res.dto';
 import { SignInResDto } from './dto/signin-res.dto';
 
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @Post('emailcheck')
+  async emailCheck(@Body() data: { email: string }): Promise<boolean> {
+    console.log(data);
+    return await this.authService.isDuplicateEmail(data.email);
+  }
+
   @Post('signup')
-  async signUp(@Body(ValidationPipe) signUpDto: SignUpReqDto): Promise<SignUpResDto> {
-    return await this.authService.register(signUpDto);
+  async signUp(@Body() signUpReqDto: SignUpReqDto): Promise<boolean> {
+    return await this.authService.register(signUpReqDto);
   }
 
   @Post('signin')
-  async signIn(@Body(ValidationPipe) signInDto: SignInReqDto): Promise<SignInResDto> {
+  async signIn(@Body() signInDto: SignInReqDto): Promise<SignInResDto> {
     return await this.authService.login(signInDto);
   }
 
   @Post('token')
   @UseGuards(JwtRefreshTokenGuard)
-  async newToken(@Body(ValidationPipe) regenerateTokenDto: RegenerateTokenDto): Promise<RegenerateTokenDto> {
+  async newToken(@Body() regenerateTokenDto: RegenerateTokenDto): Promise<RegenerateTokenDto> {
     return await this.authService.regenerateToken(regenerateTokenDto);
   }
 }

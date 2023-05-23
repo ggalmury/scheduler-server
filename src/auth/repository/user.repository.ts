@@ -3,7 +3,6 @@ import { DataSource, Repository } from 'typeorm';
 import { SignUpReqDto } from '../dto/signup-req.dto';
 import { User } from '../entity/user.entity';
 import { binaryToUuid, uuidToBinary } from '../util/uuid.util';
-import { SignUpResDto } from '../dto/signup-res.dto';
 import { SignInResDto } from '../dto/signin-res.dto';
 
 @Injectable()
@@ -14,25 +13,26 @@ export class UserRepository extends Repository<User> {
     super(User, dataSource.createEntityManager());
   }
 
-  async saveUser(signUpDto: SignUpReqDto): Promise<SignUpResDto> {
-    const { uuid, userName, email, credential } = signUpDto;
+  async saveUser(signUpReqDto: SignUpReqDto): Promise<boolean> {
+    const { email, password, name, birth, job, uuid } = signUpReqDto;
+    console.log(signUpReqDto);
 
     const uuidBinary: Buffer = uuidToBinary(uuid);
 
     try {
-      const result: User = await this.create({
+      await this.create({
         uuid: uuidBinary,
-        userName,
         email,
-        hashedCredential: credential,
+        password,
+        name,
+        birth: new Date(birth),
+        job,
         createdDt: new Date(),
       }).save();
 
-      const signUpResDto: SignUpResDto = new SignUpResDto(result.uid, uuid, result.userName, result.email, result.createdDt, true);
-
       this.logger.log(`User successfully created: ${email}`);
 
-      return signUpResDto;
+      return true;
     } catch (err) {
       if (err.code === 'ER_DUP_ENTRY') {
         return null;
@@ -47,9 +47,13 @@ export class UserRepository extends Repository<User> {
     try {
       const user: User = await this.findOneBy({ email });
 
+      if (!user) {
+        return null;
+      }
+
       const uuidOrigin: string = binaryToUuid(user.uuid);
 
-      const signInResDto: SignInResDto = new SignInResDto(user.uid, uuidOrigin, user.userName, user.email, user.createdDt, user.hashedCredential);
+      const signInResDto: SignInResDto = new SignInResDto(user.email, user.name, user.job, user.birth, user.createdDt, uuidOrigin, user.password);
 
       return signInResDto;
     } catch (err) {

@@ -10,7 +10,7 @@ export class GoogleUser extends BaseEntity {
   uuid: Buffer;
 
   @Column({ type: 'varchar', default: 'user' })
-  userName: string;
+  name: string;
 
   @Column({ type: 'varchar', nullable: false, unique: true })
   email: string;

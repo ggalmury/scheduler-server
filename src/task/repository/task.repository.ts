@@ -6,7 +6,7 @@ import { TaskModifyReqDto } from '../dto/task-modify-req.dto';
 import { TaskSearchReqDto } from '../dto/task-search-req.dto';
 import { CreatedTask } from '../entity/created-task.entity';
 import { UserPlatformType } from 'src/types/types';
-import { binaryToUuid, uuidToBinary } from 'src/auth/util/uuid.util';
+import { binaryToUuid } from 'src/auth/util/uuid.util';
 import { TaskResDto } from '../dto/task-res.dto';
 
 @Injectable()
@@ -18,13 +18,13 @@ export class TaskRepository extends Repository<CreatedTask> {
   }
 
   async createTask(user: UserPlatformType, taskCreateReqDto: TaskCreateReqDto): Promise<TaskResDto> {
-    const { uuid, userName, email } = user;
+    const { uuid, name, email } = user;
     const { title, description, location, date, time, privacy, type } = taskCreateReqDto;
 
     try {
       const result: CreatedTask = await this.create({
         uuid,
-        userName,
+        name,
         email,
         title,
         description,
@@ -40,7 +40,7 @@ export class TaskRepository extends Repository<CreatedTask> {
       const taskResDto: TaskResDto = new TaskResDto(
         result.taskId,
         binaryToUuid(result.uuid),
-        result.userName,
+        result.name,
         result.email,
         result.title,
         result.description,
@@ -77,7 +77,7 @@ export class TaskRepository extends Repository<CreatedTask> {
         return new TaskResDto(
           value.taskId,
           binaryToUuid(value.uuid),
-          value.userName,
+          value.name,
           value.email,
           value.title,
           value.description,

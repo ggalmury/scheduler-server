@@ -9,14 +9,20 @@ export class User extends BaseEntity {
   @Column({ type: 'binary', length: 16 })
   uuid: Buffer;
 
-  @Column({ type: 'varchar', default: 'user' })
-  userName: string;
-
   @Column({ type: 'varchar', nullable: false, unique: true })
   email: string;
 
   @Column({ type: 'varchar', nullable: false })
-  hashedCredential: string;
+  password: string;
+
+  @Column({ type: 'varchar' })
+  name: string;
+
+  @Column({ type: 'date' })
+  birth: Date;
+
+  @Column({ type: 'varchar' })
+  job: string;
 
   @Column({ type: 'date' })
   createdDt: Date;

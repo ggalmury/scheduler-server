@@ -2,7 +2,7 @@ import { LoginPlatformType } from '../types';
 
 export interface AccessPayload {
   uuid: string;
-  userName: string;
+  name: string;
   email: string;
   loginType: LoginPlatformType;
 }

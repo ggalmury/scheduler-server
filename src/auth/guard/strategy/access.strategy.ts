@@ -20,7 +20,7 @@ export class JwtAccessStrategy extends PassportStrategy(Strategy, StrategyName.J
   }
 
   async validate(accessPayload: AccessPayload): Promise<UserPlatformType> {
-    const { uuid, email, userName, loginType } = accessPayload;
+    const { uuid, email, name, loginType } = accessPayload;
     const uuidBinary: Buffer = uuidToBinary(uuid);
 
     let validatedUser: UserPlatformType = null;
@@ -28,10 +28,10 @@ export class JwtAccessStrategy extends PassportStrategy(Strategy, StrategyName.J
     try {
       switch (loginType) {
         case LoginPlatform.default:
-          validatedUser = await this.userRepository.findOneBy({ uuid: uuidBinary, userName, email });
+          validatedUser = await this.userRepository.findOneBy({ uuid: uuidBinary, name, email });
           break;
         case LoginPlatform.google:
-          validatedUser = await this.googleRepository.findOneBy({ uuid: uuidBinary, userName, email });
+          validatedUser = await this.googleRepository.findOneBy({ uuid: uuidBinary, name, email });
           break;
         default:
           validatedUser = null;

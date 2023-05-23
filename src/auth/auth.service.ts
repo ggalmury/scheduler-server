@@ -9,7 +9,6 @@ import { TokenRepository } from './repository/token.repository';
 import { RegenerateTokenDto } from './dto/regenerate-token.dto';
 import { UserToken } from './entity/token.entity';
 import { generateNewUuidV1 } from './util/uuid.util';
-import { SignUpResDto } from './dto/signup-res.dto';
 import { SignInResDto } from './dto/signin-res.dto';
 import { LoginPlatform } from 'src/types/types';
 
@@ -18,28 +17,39 @@ export class AuthService {
   private logger: Logger = new Logger(AuthService.name);
   constructor(private userRepository: UserRepository, private tokenRepository: TokenRepository, private jwtUtil: JwtUtil) {}
 
-  async register(signUpReqDto: SignUpReqDto): Promise<SignUpResDto> {
-    const { userName, email, credential } = signUpReqDto;
+  async isDuplicateEmail(email: string): Promise<boolean> {
+    const user: SignInResDto = await this.userRepository.findUser(email);
+
+    if (user) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  async register(signUpReqDto: SignUpReqDto): Promise<boolean> {
+    const { email, password } = signUpReqDto;
 
     const uuid: string = generateNewUuidV1();
 
     const salt: string = await bcrypt.genSalt();
-    const hashedCredential: string = await bcrypt.hash(credential, salt);
+    const hashedPassword: string = await bcrypt.hash(password, salt);
 
-    const newSignUpDto: SignUpReqDto = new SignUpReqDto(uuid, userName, email, hashedCredential);
+    signUpReqDto.uuid = uuid;
+    signUpReqDto.password = hashedPassword;
 
-    const saveUser: SignUpResDto = await this.userRepository.saveUser(newSignUpDto);
+    const didUserSave: boolean = await this.userRepository.saveUser(signUpReqDto);
 
-    if (!saveUser) {
+    if (!didUserSave) {
       this.logger.log(`Duplicate user email: ${email}`);
       throw new ConflictException('Duplicate email address');
     }
 
-    return saveUser;
+    return didUserSave;
   }
 
   async login(signInReqDto: SignInReqDto): Promise<SignInResDto> {
-    const { email, credential } = signInReqDto;
+    const { email, password } = signInReqDto;
 
     const registeredUser: SignInResDto = await this.userRepository.findUser(email);
 
@@ -48,12 +58,12 @@ export class AuthService {
       throw new NotFoundException('User not found');
     }
 
-    const decodedCredential: boolean = await bcrypt.compare(credential, registeredUser.hashedCredential);
+    const decodedPassword: boolean = await bcrypt.compare(password, registeredUser.password);
 
-    if (decodedCredential) {
+    if (decodedPassword) {
       const accessPayload: AccessPayload = {
         uuid: registeredUser.uuid,
-        userName: registeredUser.userName,
+        name: registeredUser.name,
         email: registeredUser.email,
         loginType: LoginPlatform.default,
       };
@@ -71,11 +81,11 @@ export class AuthService {
 
       registeredUser.accessToken = accessToken;
       registeredUser.refreshToken = refreshToken;
-      delete registeredUser.hashedCredential;
+      delete registeredUser.password;
 
       this.logger.log(`User verificated: ${email}`);
       return registeredUser;
-    } else if (!decodedCredential) {
+    } else if (!decodedPassword) {
       this.logger.log(`Wrong password: ${email}`);
       throw new BadRequestException('Password not matches');
     } else {
@@ -99,7 +109,7 @@ export class AuthService {
 
       const accessPayload: AccessPayload = {
         uuid: decodedAccessToken.uuid,
-        userName: decodedAccessToken.userName,
+        name: decodedAccessToken.name,
         email,
         loginType: decodedAccessToken.loginType,
       };

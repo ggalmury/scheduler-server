@@ -1,20 +1,17 @@
-import { IsEmail, IsNotEmpty } from 'class-validator';
-
 export class SignUpReqDto {
-  uuid?: string;
-  userName: string;
-
-  @IsNotEmpty()
-  @IsEmail()
   email: string;
+  password: string;
+  name: string;
+  birth: Date;
+  job: string;
+  uuid: string;
 
-  @IsNotEmpty()
-  credential: string;
-
-  constructor(uuid: string, userName: string, email: string, credential: string) {
-    this.uuid = uuid;
-    this.userName = userName;
+  constructor(email: string, password: string, name: string, birth: Date, job: string, uuid?: string) {
     this.email = email;
-    this.credential = credential;
+    this.password = password;
+    this.name = name;
+    this.birth = birth;
+    this.job = job;
+    this.uuid = uuid;
   }
 }

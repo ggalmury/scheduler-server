@@ -11,7 +11,7 @@ export class CreatedTask extends BaseEntity {
   uuid: Buffer;
 
   @Column({ type: 'varchar' })
-  userName: string;
+  name: string;
 
   @Column({ type: 'varchar', nullable: false })
   email: string;

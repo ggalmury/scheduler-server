@@ -4,6 +4,7 @@ import { SignUpReqDto } from '../dto/signup-req.dto';
 import { User } from '../entity/user.entity';
 import { binaryToUuid, uuidToBinary } from '../util/uuid.util';
 import { SignInResDto } from '../dto/signin-res.dto';
+import { Account, Token } from 'src/types/interface/auth-interface';
 
 @Injectable()
 export class UserRepository extends Repository<User> {
@@ -15,7 +16,6 @@ export class UserRepository extends Repository<User> {
 
   async saveUser(signUpReqDto: SignUpReqDto): Promise<boolean> {
     const { email, password, name, birth, job, uuid } = signUpReqDto;
-    console.log(signUpReqDto);
 
     const uuidBinary: Buffer = uuidToBinary(uuid);
 
@@ -53,7 +53,21 @@ export class UserRepository extends Repository<User> {
 
       const uuidOrigin: string = binaryToUuid(user.uuid);
 
-      const signInResDto: SignInResDto = new SignInResDto(user.email, user.name, user.job, user.birth, user.createdDt, uuidOrigin, user.password);
+      const account: Account = {
+        uuid: uuidOrigin,
+        email: user.email,
+        name: user.name,
+        job: user.job,
+        birth: user.birth,
+        createdDt: user.createdDt,
+      };
+
+      const tokenInit: Token = {
+        accessToken: '',
+        refreshToken: '',
+      };
+
+      const signInResDto: SignInResDto = new SignInResDto(account, tokenInit, uuidOrigin, user.password);
 
       return signInResDto;
     } catch (err) {

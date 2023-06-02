@@ -63,31 +63,32 @@ export class AuthService {
     if (decodedPassword) {
       const accessPayload: AccessPayload = {
         uuid: registeredUser.uuid,
-        name: registeredUser.name,
-        email: registeredUser.email,
+        name: registeredUser.account.name,
+        email: registeredUser.account.email,
         loginType: LoginPlatform.default,
       };
 
       const refreshPayload: RefreshPayload = {
         uuid: registeredUser.uuid,
-        email: registeredUser.email,
+        email: registeredUser.account.email,
         loginType: LoginPlatform.default,
       };
 
       const accessToken: string = this.jwtUtil.generateAccessToken(accessPayload);
       const refreshToken: string = this.jwtUtil.generateRefreshToken(refreshPayload);
 
-      await this.tokenRepository.saveRefreshToken(registeredUser.uuid, registeredUser.email, refreshToken);
+      await this.tokenRepository.saveRefreshToken(registeredUser.uuid, registeredUser.account.email, refreshToken);
 
-      registeredUser.accessToken = accessToken;
-      registeredUser.refreshToken = refreshToken;
+      registeredUser.token.accessToken = accessToken;
+      registeredUser.token.refreshToken = refreshToken;
       delete registeredUser.password;
+      delete registeredUser.uuid;
 
       this.logger.log(`User verificated: ${email}`);
       return registeredUser;
     } else if (!decodedPassword) {
       this.logger.log(`Wrong password: ${email}`);
-      throw new BadRequestException('Password not matches');
+      throw new NotFoundException('Password not matches');
     } else {
       this.logger.log('Error occurred');
       throw new InternalServerErrorException();

@@ -1,5 +1,19 @@
 import { LoginPlatformType } from '../types';
 
+export interface Account {
+  uuid: string;
+  email: string;
+  name: string;
+  job: string;
+  birth: Date;
+  createdDt: Date;
+}
+
+export interface Token {
+  accessToken: string;
+  refreshToken: string;
+}
+
 export interface AccessPayload {
   uuid: string;
   name: string;

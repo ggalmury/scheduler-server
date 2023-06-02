@@ -8,10 +8,17 @@ import { CreatedTask } from './entity/created-task.entity';
 import { TaskService } from './task.service';
 import { UserPlatformType } from 'src/types/types';
 import { TaskResDto } from './dto/task-res.dto';
+import { TaskTodayDto } from './dto/task-today.dto';
 
 @Controller('task')
 export class TaskController {
   constructor(private taskService: TaskService) {}
+
+  @Post('today')
+  @UseGuards(JwtAccessTokenGuard)
+  async searchTodayTask(@ExtractUser() user: UserPlatformType, @Body() taskTodayDto: TaskTodayDto): Promise<TaskResDto[]> {
+    return await this.taskService.searchTodayTask(user, taskTodayDto);
+  }
 
   @Post('create')
   @UseGuards(JwtAccessTokenGuard)

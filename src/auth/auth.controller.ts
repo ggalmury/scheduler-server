@@ -12,7 +12,6 @@ export class AuthController {
 
   @Post('emailcheck')
   async emailCheck(@Body() data: { email: string }): Promise<boolean> {
-    console.log(data);
     return await this.authService.isDuplicateEmail(data.email);
   }
 

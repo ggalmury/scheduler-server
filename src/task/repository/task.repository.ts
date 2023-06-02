@@ -8,6 +8,7 @@ import { CreatedTask } from '../entity/created-task.entity';
 import { UserPlatformType } from 'src/types/types';
 import { binaryToUuid } from 'src/auth/util/uuid.util';
 import { TaskResDto } from '../dto/task-res.dto';
+import { TaskTodayDto } from '../dto/task-today.dto';
 
 @Injectable()
 export class TaskRepository extends Repository<CreatedTask> {
@@ -17,9 +18,47 @@ export class TaskRepository extends Repository<CreatedTask> {
     super(CreatedTask, dataSource.createEntityManager());
   }
 
+  async searchTodayTask(user: UserPlatformType, taskTodayDto: TaskTodayDto): Promise<TaskResDto[]> {
+    const { uuid, email } = user;
+    const { date } = taskTodayDto;
+    console.log(uuid);
+    console.log(email);
+    console.log(date);
+
+    try {
+      const result: CreatedTask[] = await this.find({
+        where: { uuid, date },
+      });
+
+      const taskResDto: TaskResDto[] = result.map((value) => {
+        return new TaskResDto(
+          value.taskId,
+          binaryToUuid(value.uuid),
+          value.name,
+          value.email,
+          value.title,
+          value.description,
+          value.color,
+          value.location,
+          value.date,
+          value.time,
+          value.privacy,
+          value.createdDt,
+          value.state,
+          value.createdTodo,
+        );
+      });
+
+      return taskResDto;
+    } catch (err) {
+      this.logger.log(`DB error occurred(Today's task searching process): ${email}`);
+      throw new InternalServerErrorException('DB error occurred');
+    }
+  }
+
   async createTask(user: UserPlatformType, taskCreateReqDto: TaskCreateReqDto): Promise<TaskResDto> {
     const { uuid, name, email } = user;
-    const { title, description, location, date, time, privacy, type } = taskCreateReqDto;
+    const { title, description, location, date, time, privacy, color } = taskCreateReqDto;
 
     try {
       const result: CreatedTask = await this.create({
@@ -28,12 +67,11 @@ export class TaskRepository extends Repository<CreatedTask> {
         email,
         title,
         description,
-        color: type.color,
+        color,
         location,
         date,
         time,
         privacy,
-        type: type.type,
         createdDt: new Date(),
       }).save();
 
@@ -49,7 +87,6 @@ export class TaskRepository extends Repository<CreatedTask> {
         result.date,
         result.time,
         result.privacy,
-        result.type,
         result.createdDt,
         result.state,
         result.createdTodo,
@@ -86,7 +123,6 @@ export class TaskRepository extends Repository<CreatedTask> {
           value.date,
           value.time,
           value.privacy,
-          value.type,
           value.createdDt,
           value.state,
           value.createdTodo,

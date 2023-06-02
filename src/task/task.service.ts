@@ -6,11 +6,23 @@ import { CreatedTask } from './entity/created-task.entity';
 import { TaskRepository } from './repository/task.repository';
 import { UserPlatformType } from 'src/types/types';
 import { TaskResDto } from './dto/task-res.dto';
+import { TaskTodayDto } from './dto/task-today.dto';
 
 @Injectable()
 export class TaskService {
   private logger: Logger = new Logger(TaskService.name);
   constructor(private taskRepository: TaskRepository) {}
+
+  async searchTodayTask(user: UserPlatformType, taskTodayDto: TaskTodayDto): Promise<TaskResDto[]> {
+    const result: TaskResDto[] = await this.taskRepository.searchTodayTask(user, taskTodayDto);
+
+    if (!result) {
+      this.logger.log(`Task not found: ${user.email}`);
+      throw new NotFoundException('Task not found');
+    }
+
+    return result;
+  }
 
   async createTask(user: UserPlatformType, taskCreateReqDto: TaskCreateReqDto): Promise<TaskResDto> {
     return await this.taskRepository.createTask(user, taskCreateReqDto);

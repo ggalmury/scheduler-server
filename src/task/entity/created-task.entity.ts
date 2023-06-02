@@ -37,9 +37,6 @@ export class CreatedTask extends BaseEntity {
   @Column({ type: 'varchar' })
   privacy: string;
 
-  @Column({ type: 'varchar' })
-  type: string;
-
   @Column({ type: 'date' })
   createdDt: Date;
 

@@ -13,7 +13,6 @@ export class TaskResDto {
   date: string;
   time: TaskTime;
   privacy: string;
-  type: string;
   createdDt: Date;
   state: boolean;
   createdTodo: CreatedTodo[];
@@ -30,7 +29,6 @@ export class TaskResDto {
     date: string,
     time: TaskTime,
     privacy: string,
-    type: string,
     createdDt: Date,
     state: boolean,
     createdTodo: CreatedTodo[],
@@ -46,7 +44,6 @@ export class TaskResDto {
     this.date = date;
     this.time = time;
     this.privacy = privacy;
-    this.type = type;
     this.createdDt = createdDt;
     this.state = state;
     this.createdTodo = createdTodo;

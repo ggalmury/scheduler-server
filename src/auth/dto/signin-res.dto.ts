@@ -1,23 +1,15 @@
-export class SignInResDto {
-  email: string;
-  name: string;
-  job: string;
-  birth: Date;
-  createdDt: Date;
-  uuid?: string;
-  password?: string;
-  accessToken?: string;
-  refreshToken?: string;
+import { Account, Token } from 'src/types/interface/auth-interface';
 
-  constructor(email: string, name: string, job: string, birth: Date, createdDt: Date, uuid?: string, password?: string, accessToken?: string, refreshToken?: string) {
-    this.email = email;
-    this.name = name;
-    this.job = job;
-    this.birth = birth;
-    this.createdDt = createdDt;
+export class SignInResDto {
+  account: Account;
+  token: Token;
+  password?: string;
+  uuid?: string;
+
+  constructor(account: Account, token: Token, uuid?: string, password?: string) {
+    this.account = account;
+    this.token = token;
     this.uuid = uuid;
     this.password = password;
-    this.accessToken = accessToken;
-    this.refreshToken = refreshToken;
   }
 }

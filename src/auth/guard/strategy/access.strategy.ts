@@ -6,7 +6,7 @@ import { UserRepository } from 'src/auth/repository/user.repository';
 import { AccessPayload } from 'src/types/interface/auth-interface';
 import { GoogleRepository } from 'src/auth/repository/google.repository';
 import { LoginPlatform, UserPlatformType } from 'src/types/types';
-import { binaryToUuid, uuidToBinary } from 'src/auth/util/uuid.util';
+import { uuidToBinary } from 'src/auth/util/uuid.util';
 
 @Injectable()
 export class JwtAccessStrategy extends PassportStrategy(Strategy, StrategyName.JWT_ACCESS_STR) {
